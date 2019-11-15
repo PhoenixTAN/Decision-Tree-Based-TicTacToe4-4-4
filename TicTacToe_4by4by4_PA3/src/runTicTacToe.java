@@ -1,6 +1,19 @@
 import java.util.*;
 
-//TicTacToe-4x4x4
+// TicTacToe-4x4x4
+/**
+ * Class runTicTacToe
+ * @author TF in CS 640 at Boston University
+ * 
+ * Function:
+ * This files contains the main function we use to run the game.
+ * We do not suggest you to change things on it frequently
+ * unless you have to for AI debugging. 
+ * 
+ * However, after changing this file, 
+ * you need to make sure your AI code is still compatible with the original 
+ * runTicTacToe.java, because we need to use it for competition with other AIs.
+ * */
 public class runTicTacToe {
 	
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
@@ -9,50 +22,73 @@ public class runTicTacToe {
 	private aiTicTacToe ai2;
 	
 	public int result;
-	public runTicTacToe()
-	{
-		//initialize winning lines
+	
+	/**
+	 * Constructor
+	 * @author TF in CS 640 at Boston University
+	 * Function:
+	 * Initialize AI players;
+	 * Initialize game board;
+	 * */
+	public runTicTacToe() {
+		// initialize winning lines
 		winningLines = initializeWinningLines();
-		//initialzie board
+		
+		// initialize board
 		board = createTicTacToeBoard();
 		
-		//initialize AI players
+		// initialize AI players
 		ai1 = new aiTicTacToe(1);
 		ai2 = new aiTicTacToe(2);
 	}
-	private List<positionTicTacToe> createTicTacToeBoard()
-	{
-		//create a 3-d 4x4x4 TicTacToe board and store it in a list
+	
+	/**
+	 * Method: createTicTacToeBoard()
+	 * Function: Initialize the game board.
+	 * @author TF in CS 640 at Boston University
+	 * @return List<positionTicTacToe>: a position where there are x, y, z coordinates
+	 * */
+	private List<positionTicTacToe> createTicTacToeBoard() {
+		// create a 3-d 4x4x4 TicTacToe board and store it in a list
 		List<positionTicTacToe> boardTicTacToe = new ArrayList<positionTicTacToe>();
-		for(int i=0;i<4;i++)
-			for(int j=0;j<4;j++)
-				for(int k=0;k<4;k++)
-					{
-						boardTicTacToe.add(new positionTicTacToe(i,j,k,0)); //0 is state "not marked"
-					}
+		for( int i = 0; i < 4; i++ ) {
+			for( int j = 0; j < 4; j++ ) {
+				for( int k = 0; k < 4; k++ ) {
+					boardTicTacToe.add(new positionTicTacToe(i,j,k,0));  // 0 is state "not marked"
+				}
+			}
+		}
+			
 		return boardTicTacToe;
 	}
 	
-	private List<positionTicTacToe> deepCopyATicTacToeBoard(List<positionTicTacToe> board)
-	{
-		//deep copy of game boards
+	/**
+	 * Method: deepCopyATicTacToeBoard
+	 * Function: Deep copy a game board.
+	 * @author TF in CS 640 at Boston University
+	 * @param List<positionTicTacToe>
+	 * @return List<positionTicTacToe>
+	 * */
+	private List<positionTicTacToe> deepCopyATicTacToeBoard(List<positionTicTacToe> board) {
+		// deep copy of game boards
 		List<positionTicTacToe> copiedBoard = new ArrayList<positionTicTacToe>();
-		for(int i=0;i<board.size();i++)
-		{
-			copiedBoard.add(new positionTicTacToe(board.get(i).x,board.get(i).y,board.get(i).z,board.get(i).state));
+		for( int i = 0;i < board.size(); i++ ) {
+			copiedBoard.add(new positionTicTacToe(board.get(i).x, board.get(i).y, board.get(i).z, board.get(i).state));
 		}
 		return copiedBoard;
 	}
-	private List<List<positionTicTacToe>> initializeWinningLines()
-	{
-		//create a list of winning line so that the game will "brute-force" check if a player satisfied any 	winning condition(s).
+	
+	/**
+	 * 
+	 * */
+	private List<List<positionTicTacToe>> initializeWinningLines() {
+		// create a list of winning line so that the game will "brute-force" check if a player satisfied any winning condition(s).
 		List<List<positionTicTacToe>> winningLines = new ArrayList<List<positionTicTacToe>>();
 		
-		//48 straight winning lines
-		//z axis winning lines
-		for(int i = 0; i<4; i++)
-			for(int j = 0; j<4;j++)
-			{
+		// 48 straight winning lines
+		// z axis winning lines
+		for( int i = 0; i < 4; i++ )
+			for( int j = 0; j < 4; j++ ) {
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 				oneWinCondtion.add(new positionTicTacToe(i,j,0,-1));
 				oneWinCondtion.add(new positionTicTacToe(i,j,1,-1));
@@ -60,10 +96,9 @@ public class runTicTacToe {
 				oneWinCondtion.add(new positionTicTacToe(i,j,3,-1));
 				winningLines.add(oneWinCondtion);
 			}
-		//y axis winning lines
-		for(int i = 0; i<4; i++)
-			for(int j = 0; j<4;j++)
-			{
+		// y axis winning lines
+		for( int i = 0; i < 4; i++ )
+			for( int j = 0; j < 4; j++ ) {
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 				oneWinCondtion.add(new positionTicTacToe(i,0,j,-1));
 				oneWinCondtion.add(new positionTicTacToe(i,1,j,-1));
@@ -71,10 +106,9 @@ public class runTicTacToe {
 				oneWinCondtion.add(new positionTicTacToe(i,3,j,-1));
 				winningLines.add(oneWinCondtion);
 			}
-		//x axis winning lines
-		for(int i = 0; i<4; i++)
-			for(int j = 0; j<4;j++)
-			{
+		// x axis winning lines
+		for( int i = 0; i < 4; i++)
+			for(int j = 0; j < 4; j++) {
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 				oneWinCondtion.add(new positionTicTacToe(0,i,j,-1));
 				oneWinCondtion.add(new positionTicTacToe(1,i,j,-1));
@@ -83,8 +117,8 @@ public class runTicTacToe {
 				winningLines.add(oneWinCondtion);
 			}
 		
-		//12 main diagonal winning lines
-		//xz plane-4
+		// 12 main diagonal winning lines
+		// xz plane-4
 		for(int i = 0; i<4; i++)
 			{
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
@@ -94,7 +128,7 @@ public class runTicTacToe {
 				oneWinCondtion.add(new positionTicTacToe(3,i,3,-1));
 				winningLines.add(oneWinCondtion);
 			}
-		//yz plane-4
+		// yz plane-4
 		for(int i = 0; i<4; i++)
 			{
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
@@ -104,7 +138,7 @@ public class runTicTacToe {
 				oneWinCondtion.add(new positionTicTacToe(i,3,3,-1));
 				winningLines.add(oneWinCondtion);
 			}
-		//xy plane-4
+		// xy plane-4
 		for(int i = 0; i<4; i++)
 			{
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
@@ -115,8 +149,8 @@ public class runTicTacToe {
 				winningLines.add(oneWinCondtion);
 			}
 		
-		//12 anti diagonal winning lines
-		//xz plane-4
+		// 12 anti diagonal winning lines
+		// xz plane-4
 		for(int i = 0; i<4; i++)
 			{
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
@@ -126,7 +160,7 @@ public class runTicTacToe {
 				oneWinCondtion.add(new positionTicTacToe(3,i,0,-1));
 				winningLines.add(oneWinCondtion);
 			}
-		//yz plane-4
+		// yz plane-4
 		for(int i = 0; i<4; i++)
 			{
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
@@ -136,7 +170,7 @@ public class runTicTacToe {
 				oneWinCondtion.add(new positionTicTacToe(i,3,0,-1));
 				winningLines.add(oneWinCondtion);
 			}
-		//xy plane-4
+		// xy plane-4
 		for(int i = 0; i<4; i++)
 			{
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
@@ -147,7 +181,7 @@ public class runTicTacToe {
 				winningLines.add(oneWinCondtion);
 			}
 		
-		//4 additional diagonal winning lines
+		// 4 additional diagonal winning lines
 		List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 		oneWinCondtion.add(new positionTicTacToe(0,0,0,-1));
 		oneWinCondtion.add(new positionTicTacToe(1,1,1,-1));
@@ -181,14 +215,14 @@ public class runTicTacToe {
 	}
 
 	
-	private int getStateOfPositionFromBoard(positionTicTacToe position, List<positionTicTacToe> targetBoard)
-	{
+	private int getStateOfPositionFromBoard(positionTicTacToe position, List<positionTicTacToe> targetBoard) {
 		//a helper function to get state of a certain position in the Tic-Tac-Toe board by given position TicTacToe
 		int index = position.x*16+position.y*4+position.z;
 		return targetBoard.get(index).state;
 	}
-	private int isEnded()
-	{
+	
+	
+	private int isEnded() {
 		//test whether the current game is ended
 		
 		//brute-force
@@ -233,8 +267,7 @@ public class runTicTacToe {
 		return -1; //call it a draw
 	}
 	
-	public void printAllWinningLines()
-	{
+	public void printAllWinningLines() {
 		//print all winning lines to help understand in what cases will any player win
 		System.out.println(winningLines.size());
 		for (int i=0;i<winningLines.size();i++)
@@ -248,7 +281,7 @@ public class runTicTacToe {
 	}
 	public void printBoardTicTacToe(List<positionTicTacToe> targetBoard)
 	{
-		//print each position on the board, uncomment this for debugging if necessary
+		// print each position on the board, uncomment this for debugging if necessary
 		/*
 		System.out.println("board:");
 		System.out.println("board slots: "+board.size());
@@ -258,7 +291,7 @@ public class runTicTacToe {
 		}
 		*/
 		
-		//print in "graphical" display
+		// print in "graphical" display
 		for (int i=0;i<4;i++)
 		{
 			System.out.println("level(z) "+i);
@@ -292,6 +325,7 @@ public class runTicTacToe {
 			System.out.println();
 		}
 	}
+	
 	public boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> targetBoard)
 	{
 		//make move on Tic-Tac-Toe board, given position and player 
@@ -316,23 +350,24 @@ public class runTicTacToe {
 		}
 		return false;
 	}
-	public void run()
-	{
+	
+	
+	public void run() {
 
 		Random rand = new Random();
 		int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
 		
-		while((result = isEnded())==0) //game loop
+		while( ( result = isEnded() ) == 0 ) //game loop
 		{
 			if(turn==1)
 			{
-				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1); //1 stands for player 1
+				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1);  //1 stands for player 1
 				if(makeMove(player1NextMove,1,board))
 					turn = 2;
 			}
 			else if(turn==2)
 			{
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2); //2 stands for player 2
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  //2 stands for player 2
 				if(makeMove(player2NextMove,2,board))
 					turn = 1;
 			}
@@ -344,8 +379,7 @@ public class runTicTacToe {
 		}
 		
 			//game is ended
-		if(result==1)
-		{
+		if( result == 1 ) {
 			//game ends, player 1 wins 
 			System.out.println("Player1 Wins");
 			printBoardTicTacToe(board);
@@ -370,10 +404,8 @@ public class runTicTacToe {
 		
 	}
 	
-
 	
 	//run the game once
-
 	public static void main(String[] args) {		
 
 		//run game loop

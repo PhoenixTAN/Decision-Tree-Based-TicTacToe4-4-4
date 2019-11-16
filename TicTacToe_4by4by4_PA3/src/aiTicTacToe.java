@@ -89,7 +89,7 @@ public class aiTicTacToe {
 		
 		// y axis winning lines
 		for( int i = 0; i < 4; i++ )
-			for( int j = 0; j < 4;j++ ) {
+			for( int j = 0; j < 4; j++ ) {
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 				oneWinCondtion.add(new positionTicTacToe(i,0,j,-1));
 				oneWinCondtion.add(new positionTicTacToe(i,1,j,-1));
@@ -99,9 +99,8 @@ public class aiTicTacToe {
 			}
 		
 		// x axis winning lines
-		for(int i = 0; i<4; i++)
-			for(int j = 0; j<4;j++)
-			{
+		for( int i = 0; i < 4; i++ )
+			for( int j = 0; j <4 ; j++ ){
 				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 				oneWinCondtion.add(new positionTicTacToe(0,i,j,-1));
 				oneWinCondtion.add(new positionTicTacToe(1,i,j,-1));
@@ -112,67 +111,61 @@ public class aiTicTacToe {
 		
 		// 12 main diagonal winning lines
 		// xz plane-4
-		for(int i = 0; i<4; i++)
-			{
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(0,i,0,-1));
-				oneWinCondtion.add(new positionTicTacToe(1,i,1,-1));
-				oneWinCondtion.add(new positionTicTacToe(2,i,2,-1));
-				oneWinCondtion.add(new positionTicTacToe(3,i,3,-1));
-				winningLines.add(oneWinCondtion);
-			}
+		for( int i = 0; i < 4; i++ ) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			oneWinCondtion.add(new positionTicTacToe(0,i,0,-1));
+			oneWinCondtion.add(new positionTicTacToe(1,i,1,-1));
+			oneWinCondtion.add(new positionTicTacToe(2,i,2,-1));
+			oneWinCondtion.add(new positionTicTacToe(3,i,3,-1));
+			winningLines.add(oneWinCondtion);
+		}
 		//yz plane-4
-		for(int i = 0; i<4; i++)
-			{
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(i,0,0,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,1,1,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,2,2,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,3,3,-1));
-				winningLines.add(oneWinCondtion);
-			}
+		for( int i = 0; i < 4; i++ ) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			oneWinCondtion.add(new positionTicTacToe(i,0,0,-1));
+			oneWinCondtion.add(new positionTicTacToe(i,1,1,-1));
+			oneWinCondtion.add(new positionTicTacToe(i,2,2,-1));
+			oneWinCondtion.add(new positionTicTacToe(i,3,3,-1));
+			winningLines.add(oneWinCondtion);
+		}
 		// xy plane-4
-		for(int i = 0; i<4; i++)
-			{
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(0,0,i,-1));
-				oneWinCondtion.add(new positionTicTacToe(1,1,i,-1));
-				oneWinCondtion.add(new positionTicTacToe(2,2,i,-1));
-				oneWinCondtion.add(new positionTicTacToe(3,3,i,-1));
-				winningLines.add(oneWinCondtion);
-			}
+		for( int i = 0; i < 4; i++ ) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			oneWinCondtion.add(new positionTicTacToe(0,0,i,-1));
+			oneWinCondtion.add(new positionTicTacToe(1,1,i,-1));
+			oneWinCondtion.add(new positionTicTacToe(2,2,i,-1));
+			oneWinCondtion.add(new positionTicTacToe(3,3,i,-1));
+			winningLines.add(oneWinCondtion);
+		}
 		
 		//12 anti diagonal winning lines
 		//xz plane-4
-		for(int i = 0; i<4; i++)
-			{
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(0,i,3,-1));
-				oneWinCondtion.add(new positionTicTacToe(1,i,2,-1));
-				oneWinCondtion.add(new positionTicTacToe(2,i,1,-1));
-				oneWinCondtion.add(new positionTicTacToe(3,i,0,-1));
-				winningLines.add(oneWinCondtion);
-			}
+		for( int i = 0; i < 4; i++ ) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			oneWinCondtion.add(new positionTicTacToe(0,i,3,-1));
+			oneWinCondtion.add(new positionTicTacToe(1,i,2,-1));
+			oneWinCondtion.add(new positionTicTacToe(2,i,1,-1));
+			oneWinCondtion.add(new positionTicTacToe(3,i,0,-1));
+			winningLines.add(oneWinCondtion);
+		}
 		// yz plane-4
-		for(int i = 0; i<4; i++)
-			{
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(i,0,3,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,1,2,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,2,1,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,3,0,-1));
-				winningLines.add(oneWinCondtion);
-			}
+		for( int i = 0; i < 4; i++ ) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			oneWinCondtion.add(new positionTicTacToe(i,0,3,-1));
+			oneWinCondtion.add(new positionTicTacToe(i,1,2,-1));
+			oneWinCondtion.add(new positionTicTacToe(i,2,1,-1));
+			oneWinCondtion.add(new positionTicTacToe(i,3,0,-1));
+			winningLines.add(oneWinCondtion);
+		}
 		//xy plane-4
-		for(int i = 0; i<4; i++)
-			{
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(0,3,i,-1));
-				oneWinCondtion.add(new positionTicTacToe(1,2,i,-1));
-				oneWinCondtion.add(new positionTicTacToe(2,1,i,-1));
-				oneWinCondtion.add(new positionTicTacToe(3,0,i,-1));
-				winningLines.add(oneWinCondtion);
-			}
+		for(int i = 0; i<4; i++) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			oneWinCondtion.add(new positionTicTacToe(0,3,i,-1));
+			oneWinCondtion.add(new positionTicTacToe(1,2,i,-1));
+			oneWinCondtion.add(new positionTicTacToe(2,1,i,-1));
+			oneWinCondtion.add(new positionTicTacToe(3,0,i,-1));
+			winningLines.add(oneWinCondtion);
+		}
 		
 		//4 additional diagonal winning lines
 		List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();

@@ -72,7 +72,7 @@ public class runTicTacToe {
 	private List<positionTicTacToe> deepCopyATicTacToeBoard(List<positionTicTacToe> board) {
 		// deep copy of game boards
 		List<positionTicTacToe> copiedBoard = new ArrayList<positionTicTacToe>();
-		for( int i = 0;i < board.size(); i++ ) {
+		for( int i = 0; i < board.size(); i++ ) {
 			copiedBoard.add(new positionTicTacToe(board.get(i).x, board.get(i).y, board.get(i).z, board.get(i).state));
 		}
 		return copiedBoard;
@@ -224,7 +224,7 @@ public class runTicTacToe {
 		// test whether the current game is ended
 		
 		// brute-force
-		for( int i = 0;i < winningLines.size(); i++ ) {
+		for( int i = 0; i < winningLines.size(); i++ ) {
 			
 			positionTicTacToe p0 = winningLines.get(i).get(0);
 			positionTicTacToe p1 = winningLines.get(i).get(1);
@@ -290,14 +290,14 @@ public class runTicTacToe {
 			System.out.println("level(z) "+i);
 			for( int j = 0; j < 4; j++ ) {
 				System.out.print("["); // boundary
-				for( int k=0; k < 4; k++ ) {
-					if ( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 1) {
+				for( int k = 0; k < 4; k++ ) {
+					if ( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 1 ) {
 						System.out.print("X"); //print cross "X" for position marked by player 1
 					}
-					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i),targetBoard) ==2 ) {
+					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 2 ) {
 						System.out.print("O"); //print cross "O" for position marked by player 2
 					}
-					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i),targetBoard) == 0 ) {
+					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 0 ) {
 						System.out.print("_"); //print "_" if the position is not marked
 					}
 					if( k == 3 ) {
@@ -340,12 +340,18 @@ public class runTicTacToe {
 		//game loop
 		while( ( result = isEnded() ) == 0 ) {
 			if( turn == 1 ) {
-				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1);  //1 stands for player 1
+				long time1 = System.currentTimeMillis();
+				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1);  // 1 stands for player 1
+				long time2 = System.currentTimeMillis();
+				System.out.println("Player 1 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player1NextMove,1,board))
 					turn = 2;
 			}
 			else if( turn == 2 ) {
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  //2 stands for player 2
+				long time1 = System.currentTimeMillis();
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  // 2 stands for player 2
+				long time2 = System.currentTimeMillis();
+				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))
 					turn = 1;
 			}
@@ -377,14 +383,16 @@ public class runTicTacToe {
 		}
 		
 	}
-	
-	
+		
 	//run the game once
 	public static void main(String[] args) {		
 
 		//run game loop
 		runTicTacToe rttt = new runTicTacToe();
+		long time1 = System.currentTimeMillis();
 		rttt.run();
+		long time2 = System.currentTimeMillis();
+		System.out.println("Program run time: " + (time2 - time1) + " ms");
 	}
 }
 

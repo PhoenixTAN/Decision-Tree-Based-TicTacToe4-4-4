@@ -27,8 +27,8 @@ public class aiTicTacToe {
 	private static List<positionTicTacToe> currentBoard;
 	private static List<List<positionTicTacToe>> winningLines; 	
 	private static positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
-	private static int[] playerSequenceNum;
-	private static int[] opponentSequenceNum;
+	private static int[] playerSequenceNum = new int[4];
+	private static int[] opponentSequenceNum = new int[4];
 	private static List<positionTicTacToe> avaliablePositions;
 	private static List<Integer> nextMoveEvaluation;
 	
@@ -53,22 +53,6 @@ public class aiTicTacToe {
 			new positionTicTacToe(2, 2, 1),
 			new positionTicTacToe(1, 1, 2)		
 	};	
-
-	private static final HashSet<positionTicTacToe> cornerPositions = new HashSet<positionTicTacToe>() { 
-		{
-			add( new positionTicTacToe(0, 0, 0) );
-		}	
-	};
-	private static final HashSet<positionTicTacToe> edgePositions = new HashSet<positionTicTacToe>() { 
-		{
-			add( new positionTicTacToe(0, 1, 0) );
-		}	
-	};
-	private static final HashSet<positionTicTacToe> facePositions = new HashSet<positionTicTacToe>() { 
-		{
-			add( new positionTicTacToe(1, 1, 0) );
-		}	
-	};
 			
 	/**
 	 * Constructor
@@ -83,7 +67,7 @@ public class aiTicTacToe {
 	
 	public positionTicTacToe myAIAlgorithm2(List<positionTicTacToe> board, int player) {
 		
-		currentBoard = new ArrayList<positionTicTacToe>(board);
+		currentBoard = deepCopyATicTacToeBoard(board);
 		
 		// Detect three sequences, which means that you have to block your opponent.
 		positionTicTacToe forceMove = getForceMove(player);
@@ -130,7 +114,8 @@ public class aiTicTacToe {
 		// TODO: this is where you are going to implement your AI algorithm to win the game. 
 							
 		try {
-			currentBoard = new ArrayList<positionTicTacToe>(board);
+			System.out.println("Player" + player + "' turn:");
+			currentBoard = deepCopyATicTacToeBoard(board);
 			
 			// The default is an AI randomly choose any available move.
 			Random rand = new Random();
@@ -155,13 +140,12 @@ public class aiTicTacToe {
 			}
 			
 			getAvaliablePositions(currentBoard);
-			System.out.println(avaliablePositions.size());
 			initializeNextMoveValue(currentBoard, player);
-			TimeUnit.SECONDS.sleep(200);
+
 			// if avaliablePositions <= 4
 			// occupy the strongest points
 			// then hard code
-			/*if( avaliablePositions.size() > 60 ) {						
+			if( avaliablePositions.size() > 60 ) {						
 				for( int i = 0; i < strongestPositions.length; i++ ) {	
 					positionTicTacToe po = strongestPositions[i];
 					myNextMove = new positionTicTacToe(po.x, po.y, po.z);
@@ -171,23 +155,26 @@ public class aiTicTacToe {
 						return myNextMove;
 					}
 				}							
-			}*/
-			/*			
+			}
+			int maxValue;		
 			for( int i = 0; i < avaliablePositions.size(); i++ ) {
+				
 				positionTicTacToe po = avaliablePositions.get(i);
-				int value = nextMoveEvaluation.get(i);	
-				//System.out.println(value);
-				List<positionTicTacToe> newBoard = new ArrayList<positionTicTacToe>(currentBoard);
-				newBoard.add(new positionTicTacToe(po.x, po.y, po.z, player));
-				int beta = evaluator(newBoard, player);
-				int newValue = miniMax(miniMaxDepth, newBoard, player, false, value, Integer.MIN_VALUE, beta);  // DFS
-				// int newValue = evaluator(newBoard, player);
-				if( newValue > value ) {
-					value = newValue;
+				maxValue = nextMoveEvaluation.get(i);	
+				
+				System.out.println("Move: " + po.x + " " + po.y + " " + po.z + " Value: " + maxValue);
+				
+				List<positionTicTacToe> newBoard = deepCopyATicTacToeBoard(currentBoard);
+				this.makeMove(po, player, newBoard);
+				
+				int newValue = miniMax(miniMaxDepth, newBoard, player, false, maxValue, Integer.MIN_VALUE, Integer.MAX_VALUE);  // DFS
+				System.out.println("New Value: " + maxValue);
+				if( newValue > maxValue ) {
+					maxValue = newValue;
 					myNextMove = new positionTicTacToe(po.x, po.y, po.z);
-					// System.out.println(value);
+					System.out.println("Suggestion: " + po.x + " " + po.y + " " + po.z + " Value: " + maxValue);
 				}				
-			}*/
+			}
 		}
 		catch( Exception error ) {
 			error.printStackTrace();
@@ -202,8 +189,7 @@ public class aiTicTacToe {
 	 * */
 	private int miniMax(int depth, List<positionTicTacToe> board, int player, boolean maximizingPlayer, int value, int alpha, int beta) {
 		
-		if( depth == 0 || isWin(board)/**/ ) {
-			//System.out.println(value);
+		if( depth == 0 || isWin(board) ) {
 			return value;
 		}
 		if( maximizingPlayer ) {
@@ -218,6 +204,11 @@ public class aiTicTacToe {
 				value = Math.max(value, evaluator(child, player));
 				//System.out.println(value);
 				value = Math.max(value, miniMax(depth - 1, child, player, false, value, alpha, beta));
+			
+				alpha = Math.max(alpha, value);
+				if( alpha >= beta ) {
+					break;  // pruning
+				}
 			}
 			// return the maximum value
 			
@@ -235,6 +226,10 @@ public class aiTicTacToe {
 				List<positionTicTacToe> child = children.get(i);
 				value = Math.min(value, evaluator(child, player));
 				value = Math.min(value, miniMax(depth - 1, child, player, true, value, alpha, beta));
+				beta = Math.min(beta, value);
+				if( alpha >= beta ) {
+					break;  // pruning
+				}
 			}
 			// return the minimum value
 			
@@ -251,8 +246,8 @@ public class aiTicTacToe {
 		
 		for( positionTicTacToe po : avaliablePositions ) {
 			
-			List<positionTicTacToe> child = new ArrayList<positionTicTacToe>(board);
-			child.add( new positionTicTacToe(po.x, po.y, po.z, player));
+			List<positionTicTacToe> child = this.deepCopyATicTacToeBoard(board);
+			this.makeMove(po, player, child);
 			children.add(child);
 		}
 		
@@ -276,12 +271,6 @@ public class aiTicTacToe {
 				}
 			}
 		}
-		
-		/*System.out.println("avaliablePositions");
-		for( positionTicTacToe po : avaliablePositions ) {
-			System.out.println(po.x + " " +  po.y + " " + po.z);
-		}*/
-		
 	}
 	
 	/**
@@ -290,25 +279,11 @@ public class aiTicTacToe {
 	 * */
 	private void initializeNextMoveValue(List<positionTicTacToe> board, int player) {
 		nextMoveEvaluation = new ArrayList<Integer>();
-				
 		for( int i = 0; i < avaliablePositions.size(); i++ ) {
 		 	List<positionTicTacToe> nextBoard = deepCopyATicTacToeBoard(board);
-			// List<positionTicTacToe> nextBoard = new ArrayList<positionTicTacToe>(board);
 			positionTicTacToe po = avaliablePositions.get(i);
-			System.out.println(po.x + " " +  po.y + " " + po.z);
-			// nextBoard.add(new positionTicTacToe(position.x, position.y, position.z, player));
-			
-			for( int j = 0; j < nextBoard.size(); j++ ) {
-				if( nextBoard.get(j).x == po.x && nextBoard.get(j).y == po.y && nextBoard.get(j).z == po.z ) {
-					nextBoard.get(j).state = player;
-					System.out.println(nextBoard.get(j).x + " " + nextBoard.get(j).y + " " + nextBoard.get(j).z );
-					System.out.println(po.x + " " +  po.y + " " + po.z);
-					//this.printBoardTicTacToe(nextBoard);
-					System.out.println(evaluator(nextBoard, player));
-					nextMoveEvaluation.add(evaluator(nextBoard, player));
-					break;
-				}
-			}			
+			this.makeMove(po, player, nextBoard);
+			nextMoveEvaluation.add(evaluator(nextBoard, player));		
 		}
 	}
 		
@@ -328,8 +303,12 @@ public class aiTicTacToe {
 		
 		// initialize
 		int opponent = (player == 1 ? 2 : 1);
-		playerSequenceNum = new int[4];
-		opponentSequenceNum = new int[4];
+		for( int i = 0; i < playerSequenceNum.length; i++ ) {
+			playerSequenceNum[i] = 0;
+		}
+		for( int i = 0; i < opponentSequenceNum.length; i++ ) {
+			opponentSequenceNum[i] = 0;
+		}
 		
 		for(int i = 0; i < winningLines.size(); i++) {
 			positionTicTacToe p0 = winningLines.get(i).get(0);
@@ -486,8 +465,7 @@ public class aiTicTacToe {
 	
 	public boolean isWin(List<positionTicTacToe> board) {
 
-		for(int i = 0; i < winningLines.size(); i++)
-		{
+		for(int i = 0; i < winningLines.size(); i++) {
 			positionTicTacToe p0 = winningLines.get(i).get(0);
 			positionTicTacToe p1 = winningLines.get(i).get(1);
 			positionTicTacToe p2 = winningLines.get(i).get(2);
@@ -497,9 +475,8 @@ public class aiTicTacToe {
 			int state1 = getStateOfPositionFromBoard(p1, board);
 			int state2 = getStateOfPositionFromBoard(p2, board);
 			int state3 = getStateOfPositionFromBoard(p3, board);
-			//if they have the same state (marked by same player) and they are not all marked.
-			if ( state0 != 0 && state0 == state1 && state1 == state2 && state2 == state3)
-			{
+			// if they have the same state (marked by same player) and they are not all marked.
+			if ( state0 != 0 && state0 == state1 && state1 == state2 && state2 == state3) {
 				return true;
 			}
 		}
@@ -651,17 +628,7 @@ public class aiTicTacToe {
 	}
 	
 	public void printBoardTicTacToe(List<positionTicTacToe> targetBoard) {
-		// print each position on the board, uncomment this for debugging if necessary
-		/*
-		System.out.println("board:");
-		System.out.println("board slots: "+board.size());
-		for (int i=0;i<board.size();i++)
-		{
-			board.get(i).printPosition();
-		}
-		*/
-		
-		// print in "graphical" display
+
 		for ( int i = 0; i < 4; i++ ) {
 			System.out.println("level(z) "+i);
 			for( int j = 0; j < 4; j++ ) {
@@ -700,6 +667,27 @@ public class aiTicTacToe {
 			copiedBoard.add(new positionTicTacToe(board.get(i).x, board.get(i).y, board.get(i).z, board.get(i).state));
 		}
 		return copiedBoard;
+	}
+	
+	private boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> targetBoard) {
+		//make move on Tic-Tac-Toe board, given position and player 
+		//player 1 = 1, player 2 = 2
+		
+		//brute force (obviously not a wise way though)
+		for( int i = 0; i < targetBoard.size(); i++ ) {
+			//if this is the position
+			if( targetBoard.get(i).x == position.x && targetBoard.get(i).y == position.y && targetBoard.get(i).z == position.z )  {
+				if( targetBoard.get(i).state == 0 ) {
+					targetBoard.get(i).state = player;
+					return true;
+				}
+				else {
+					System.out.println("Error: this is not a valid move.");
+				}
+			}
+			
+		}
+		return false;
 	}
 	
 }

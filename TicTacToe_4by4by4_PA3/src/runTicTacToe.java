@@ -413,7 +413,7 @@ public class runTicTacToe {
 		long time2 = System.currentTimeMillis();
 		System.out.println("Program run time: " + (time2 - time1) + " ms");*/
 		
-		int rounds = 1;
+		int rounds = 10;
 		
 		while( rounds > 0 ) {
 			runTicTacToe rttt = new runTicTacToe();
@@ -422,8 +422,8 @@ public class runTicTacToe {
 			long time2 = System.currentTimeMillis();
 			System.out.println("Program run time: " + (time2 - time1) + " ms");
 			rounds--;
+			System.out.println("player1: " + player1wins + " player2: " + player2wins);
 		}
-		System.out.println("player1: " + player1wins + " player2: " + player2wins);
 	}
 }
 

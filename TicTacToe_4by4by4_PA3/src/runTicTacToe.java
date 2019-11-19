@@ -25,6 +25,7 @@ public class runTicTacToe {
 	
 	private static int player1wins = 0;  // Ziqi Tan
 	private static int player2wins = 0; // Ziqi Tan
+	private static int firstPlayer = 0;  // Ziqi Tan
 	
 	/**
 	 * Constructor
@@ -339,7 +340,7 @@ public class runTicTacToe {
 
 		Random rand = new Random();
 		int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
-		
+		firstPlayer = turn;
 		//game loop
 		while( ( result = isEnded() ) == 0 ) {
 			if( turn == 1 ) {
@@ -413,7 +414,7 @@ public class runTicTacToe {
 		long time2 = System.currentTimeMillis();
 		System.out.println("Program run time: " + (time2 - time1) + " ms");*/
 		
-		int rounds = 10;
+		int rounds = 20;
 		
 		while( rounds > 0 ) {
 			runTicTacToe rttt = new runTicTacToe();
@@ -422,6 +423,7 @@ public class runTicTacToe {
 			long time2 = System.currentTimeMillis();
 			System.out.println("Program run time: " + (time2 - time1) + " ms");
 			rounds--;
+			System.out.println("Player " + firstPlayer + " is the first player.");
 			System.out.println("player1: " + player1wins + " player2: " + player2wins);
 		}
 	}

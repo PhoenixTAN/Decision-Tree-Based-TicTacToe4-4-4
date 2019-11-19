@@ -36,7 +36,7 @@ public class aiTicTacToe {
 	 * Private static final variables
 	 * @author Ziqi Tan
 	 * */
-	private static final int[] playerSequenceValue = new int[] {1, 10, 100, 100000};
+	private static final int[] playerSequenceValue = new int[] {1, 15, 150, 100000};
 	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
 	private static final int miniMaxDepth = 3;
 	
@@ -140,7 +140,6 @@ public class aiTicTacToe {
 			}
 			
 			getAvaliablePositions(currentBoard);
-			initializeNextMoveValue(currentBoard, player);
 
 			// if avaliablePositions <= 4
 			// occupy the strongest points
@@ -156,25 +155,25 @@ public class aiTicTacToe {
 					}
 				}							
 			}
-			int maxValue;		
+			int maxValue = Integer.MIN_VALUE;		
 			for( int i = 0; i < avaliablePositions.size(); i++ ) {
 				
 				positionTicTacToe po = avaliablePositions.get(i);
-				maxValue = nextMoveEvaluation.get(i);	
-				
-				System.out.println("Move: " + po.x + " " + po.y + " " + po.z + " Value: " + maxValue);
-				
+
 				List<positionTicTacToe> newBoard = deepCopyATicTacToeBoard(currentBoard);
 				this.makeMove(po, player, newBoard);
 				
-				int newValue = miniMax(miniMaxDepth, newBoard, player, false, maxValue, Integer.MIN_VALUE, Integer.MAX_VALUE);  // DFS
-				System.out.println("New Value: " + maxValue);
+				int newValue = miniMax(miniMaxDepth, newBoard, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);  // DFS
+				// System.out.println("New Value: " + newValue);
+				
+				// update max value
 				if( newValue > maxValue ) {
 					maxValue = newValue;
 					myNextMove = new positionTicTacToe(po.x, po.y, po.z);
-					System.out.println("Suggestion: " + po.x + " " + po.y + " " + po.z + " Value: " + maxValue);
+					// System.out.println("New move: " + po.x + " " + po.y + " " + po.z + " Value: " + maxValue);
 				}				
 			}
+			System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
 		}
 		catch( Exception error ) {
 			error.printStackTrace();
@@ -187,13 +186,14 @@ public class aiTicTacToe {
 	 * Method: miniMax
 	 * @author Ziqi Tan
 	 * */
-	private int miniMax(int depth, List<positionTicTacToe> board, int player, boolean maximizingPlayer, int value, int alpha, int beta) {
+	private int miniMax(int depth, List<positionTicTacToe> board, int player, boolean maximizingPlayer, /*int value,*/ int alpha, int beta) {
 		
 		if( depth == 0 || isWin(board) ) {
-			return value;
+			// return value;
+			return evaluator(board, player);
 		}
 		if( maximizingPlayer ) {
-			value = Integer.MIN_VALUE;
+			int value = Integer.MIN_VALUE;
 			
 			// generate children list
 			getAvaliablePositions(board);
@@ -201,13 +201,10 @@ public class aiTicTacToe {
 			// for each child do a miniMax recursion
 			for( int i = 0; i < children.size(); i++ ) {
 				List<positionTicTacToe> child = children.get(i);
-				value = Math.max(value, evaluator(child, player));
-				//System.out.println(value);
-				value = Math.max(value, miniMax(depth - 1, child, player, false, value, alpha, beta));
-			
+				value = Math.max(value, miniMax(depth - 1, child, player, false, alpha, beta));		
 				alpha = Math.max(alpha, value);
 				if( alpha >= beta ) {
-					break;  // pruning
+					break;  // beta pruning
 				}
 			}
 			// return the maximum value
@@ -216,7 +213,7 @@ public class aiTicTacToe {
 		}
 		else {
 			// minimizing player
-			value = Integer.MAX_VALUE;
+			int value = Integer.MAX_VALUE;
 			// generate children list
 			getAvaliablePositions(board);
 			int opponent = (player == 1 ? 2 : 1);
@@ -224,11 +221,10 @@ public class aiTicTacToe {
 			// for each child do a miniMax recursion
 			for( int i = 0; i < children.size(); i++ ) {
 				List<positionTicTacToe> child = children.get(i);
-				value = Math.min(value, evaluator(child, player));
-				value = Math.min(value, miniMax(depth - 1, child, player, true, value, alpha, beta));
+				value = Math.min(value, miniMax(depth - 1, child, player, true, alpha, beta));
 				beta = Math.min(beta, value);
 				if( alpha >= beta ) {
-					break;  // pruning
+					break;  // alpha pruning
 				}
 			}
 			// return the minimum value
@@ -270,20 +266,6 @@ public class aiTicTacToe {
 					}
 				}
 			}
-		}
-	}
-	
-	/**
-	 * Method: initializeNextMoveValue
-	 * @author Ziqi Tan
-	 * */
-	private void initializeNextMoveValue(List<positionTicTacToe> board, int player) {
-		nextMoveEvaluation = new ArrayList<Integer>();
-		for( int i = 0; i < avaliablePositions.size(); i++ ) {
-		 	List<positionTicTacToe> nextBoard = deepCopyATicTacToeBoard(board);
-			positionTicTacToe po = avaliablePositions.get(i);
-			this.makeMove(po, player, nextBoard);
-			nextMoveEvaluation.add(evaluator(nextBoard, player));		
 		}
 	}
 		
@@ -670,12 +652,12 @@ public class aiTicTacToe {
 	}
 	
 	private boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> targetBoard) {
-		//make move on Tic-Tac-Toe board, given position and player 
-		//player 1 = 1, player 2 = 2
+		// make move on Tic-Tac-Toe board, given position and player 
+		// player 1 = 1, player 2 = 2
 		
-		//brute force (obviously not a wise way though)
+		// brute force (obviously not a wise way though)
 		for( int i = 0; i < targetBoard.size(); i++ ) {
-			//if this is the position
+			// if this is the position
 			if( targetBoard.get(i).x == position.x && targetBoard.get(i).y == position.y && targetBoard.get(i).z == position.z )  {
 				if( targetBoard.get(i).state == 0 ) {
 					targetBoard.get(i).state = player;

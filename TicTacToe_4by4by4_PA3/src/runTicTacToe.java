@@ -23,6 +23,9 @@ public class runTicTacToe {
 	
 	public int result;
 	
+	private static int player1wins = 0;  // Ziqi Tan
+	private static int player2wins = 0; // Ziqi Tan
+	
 	/**
 	 * Constructor
 	 * @author TF in CS 640 at Boston University
@@ -341,15 +344,29 @@ public class runTicTacToe {
 		while( ( result = isEnded() ) == 0 ) {
 			if( turn == 1 ) {
 				long time1 = System.currentTimeMillis();
-				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1);  // 1 stands for player 1
+				positionTicTacToe player1NextMove = ai1.myAIAlgorithm(board,1);  // 1 stands for player 1				
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 1 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player1NextMove,1,board))
 					turn = 2;
+				this.printBoardTicTacToe(board);
 			}
 			else if( turn == 2 ) {
 				long time1 = System.currentTimeMillis();
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  // 2 stands for player 2
+				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  // 2 stands for player 2
+				/////////////
+				/*positionTicTacToe player2NextMove = new positionTicTacToe(0,0,0,2);
+				Random rand1 = new Random();
+				do {			
+					// We can also randomly choose a strong point.
+					int x = rand1.nextInt(4);
+					int y = rand1.nextInt(4);
+					int z = rand1.nextInt(4);
+					player2NextMove = new positionTicTacToe(x,y,z,2);
+				} while( getStateOfPositionFromBoard(player2NextMove, board) != 0 );*/
+				
+				///////////
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);  // 2 stands for player 2
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))
@@ -363,11 +380,13 @@ public class runTicTacToe {
 		
 			//game is ended
 		if( result == 1 ) {
+			player1wins++;
 			//game ends, player 1 wins 
 			System.out.println("Player1 Wins");
 			printBoardTicTacToe(board);
 		}
 		else if( result == 2 ) {
+			player2wins++;
 			//game ends, player 1 wins 
 			System.out.println("Player2 Wins");
 			printBoardTicTacToe(board);
@@ -388,11 +407,23 @@ public class runTicTacToe {
 	public static void main(String[] args) {		
 
 		//run game loop
-		runTicTacToe rttt = new runTicTacToe();
+		/*runTicTacToe rttt = new runTicTacToe();
 		long time1 = System.currentTimeMillis();
 		rttt.run();
 		long time2 = System.currentTimeMillis();
-		System.out.println("Program run time: " + (time2 - time1) + " ms");
+		System.out.println("Program run time: " + (time2 - time1) + " ms");*/
+		
+		int rounds = 1;
+		
+		while( rounds > 0 ) {
+			runTicTacToe rttt = new runTicTacToe();
+			long time1 = System.currentTimeMillis();
+			rttt.run();
+			long time2 = System.currentTimeMillis();
+			System.out.println("Program run time: " + (time2 - time1) + " ms");
+			rounds--;
+		}
+		System.out.println("player1: " + player1wins + " player2: " + player2wins);
 	}
 }
 

@@ -25,6 +25,7 @@ public class aiTicTacToe {
 	 * */
 	private static List<positionTicTacToe> currentBoard;
 	private static List<List<positionTicTacToe>> winningLines; 	
+	
 	private static positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
 	private static int[] playerSequenceNum = new int[4];
 	private static int[] opponentSequenceNum = new int[4];
@@ -127,11 +128,19 @@ public class aiTicTacToe {
 				return forceMove;
 			}
 			
+			
 			// Detect wining lines, which means that you will win.
 			positionTicTacToe winMove = getWinMove(player);
 			if( winMove != null ) {
 				return winMove;
 			}
+			
+			/*byte winMove = getWinMoveFromByte(player);
+			if( winMove != -1 ) {
+				this.xyzTo1d(i, j, k)
+				return 
+			}*/
+				
 			
 			getAvaliablePositions(currentBoard);
 
@@ -690,9 +699,32 @@ public class aiTicTacToe {
 	/**
 	 * Method: xyzTo1d
 	 * @author Kaijia You
+	 * Function: Transform 3 dimension coordination to 1 dimension.
+	 * @param int x, y, z
+	 * 
+	 * @return byte index
 	 * */
 	private byte xyzTo1d(int i, int j, int k) {
 		return (byte)(i * 16 + j * 4 + k);
+	}
+	
+	/**
+	 * Method: oneDToxyz
+	 * @author Kaijia You
+	 * Function: Transform 1 dimension coordination to 3 dimension.
+	 * @return int[]{x, y, z} 
+	 * */
+	private int[] oneDToxyz(byte index) {
+		
+		int i = (int)index;
+		
+		int x = i/16;
+		i -= x*16;
+		int y = i/4;
+		i -= y*4;
+		int z = i/1;
+		
+		return new int[]{x, y, z};
 	}
 	
 	/**
@@ -823,10 +855,38 @@ public class aiTicTacToe {
 	 * Function: get a force move if your opponent has a three-in-a-row
 	 * @return Return the force position or null
 	 * */
-	private positionTicTacToe getForceMoveFromByte(int player) {
+	private byte getForceMoveFromByte(int player) {
+		int opponent = (player == 1 ? 2 : 1);
+		byte forceMove = -1;
 		
-		
-		return null;
+		for(int i = 0; i < winningLine.length; i++) {
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+				
+			int state0 = curBoard[p0];
+			int state1 = curBoard[p1];
+			int state2 = curBoard[p2];
+			int state3 = curBoard[p3];
+				
+			if( state0 == opponent && state1 == opponent && state2 == opponent && state3 == 0 ) {
+				forceMove = p3;
+			}
+			// return blockMove = p3;
+			else if( state0 == opponent && state1 == opponent && state2 == 0 && state3 == opponent ) {
+				forceMove = p2;
+			}
+			// return blockMove = p2;
+			else if( state0 == opponent && state1 == 0 && state2 == opponent && state3 == opponent ) {
+				forceMove = p1;
+			}
+			// return blockMove = p1;
+			else if( state0 == 0 && state1 == opponent && state2 == opponent && state3 == opponent ) {
+				forceMove = p0;
+			}
+		}
+		return forceMove;
 	}
 	
 	/**
@@ -838,10 +898,55 @@ public class aiTicTacToe {
 	 * @param current player
 	 * @return a tic tac toe position
 	 * */
-	private positionTicTacToe getWinMoveFromByte(int player) {
+	private byte getWinMoveFromByte(int player) {
+		byte winMove = -1;
+		player = (byte)player;
 		
-		return null;
+		for(int i = 0;i < winningLine.length;i++) {
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+			
+			int playerCounter = 0;
+			if(p0 == player) {
+				playerCounter++;
+			}
+			if(p1 == player) {
+				playerCounter++;
+			}
+			if(p2 == player) {
+				playerCounter++;
+			}
+			if(p3 == player) {
+				playerCounter++;
+			}
+			
+			if(playerCounter == 3) {
+				if( p3 == 0 ) {
+					winMove = p3;				
+					return winMove;
+				}
+				//return blockMove = p3;
+				else if (p2 == 0) {
+					winMove = p2;				
+					return winMove;
+				}
+				//return blockMove = p2;
+				else if (p1 == 0) {
+					winMove = p1;				
+					return winMove;
+				}
+				//return blockMove = p1;
+				else if (p0 == 0) {
+					winMove = p0;				
+					return winMove;
+				}
+			}
+		}
+		return winMove;
 	}
+
 	
 	
 	

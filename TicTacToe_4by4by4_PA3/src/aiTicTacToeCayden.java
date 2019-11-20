@@ -23,17 +23,14 @@ public class aiTicTacToeCayden {
 	 * Private static variables
 	 * @author Ziqi Tan
 	 * */
-	private static List<positionTicTacToe> currentBoard;
-	private static List<List<positionTicTacToe>> winningLines; 	
-	private static positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
-	private static int[] playerSequenceNum = new int[4];
-	private static int[] opponentSequenceNum = new int[4];
-	
-	private static byte[] curBoard = new byte[64];
 	private static byte[][] winningLine = new byte[76][4];
 	
-	private static List<positionTicTacToe> avaliablePositions;
+	private positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
+	private int[] playerSequenceNum = new int[4];
+	private int[] opponentSequenceNum = new int[4];
 	
+	private byte[] curBoard = new byte[64];
+		
 	/**
 	 * Private static final variables
 	 * @author Ziqi Tan
@@ -55,6 +52,28 @@ public class aiTicTacToeCayden {
 			new positionTicTacToe(2, 2, 1),
 			new positionTicTacToe(1, 1, 2)		
 	};
+	
+	private static final int[] corePoints = {
+		21, 22, 25, 26, 37, 38, 41, 42
+	};
+	
+	private static final int[] cornerPoints = {
+		0, 3, 12, 16, 48, 51, 60, 63
+	};
+	
+	private static final int[] otherPoints = {
+			1, 2, 4, 5, 6, 7, 8, 9, 
+			10, 11, 13, 14, 15, 17, 18, 19, 
+			20, 23, 24, 27, 28, 29, 
+			30, 31, 32, 33, 34, 35, 36, 39, 
+			40, 43, 44, 45, 46, 47, 49, 
+			50, 52, 53, 54, 55, 56, 57, 58, 59, 
+			61, 62
+	};
+	
+	private static final int[] traverseOrder = {
+			
+	};
 
 	/**
 	 * Constructor
@@ -64,38 +83,9 @@ public class aiTicTacToeCayden {
 	 * */
 	public aiTicTacToeCayden( int setPlayer ) {		
 		player = setPlayer;
-		winningLines = initializeWinningLines();
+		this.getWinningLines();
 	}
-	
-	public positionTicTacToe myAIAlgorithm2(List<positionTicTacToe> board, int player) {
 		
-		currentBoard = deepCopyATicTacToeBoard(board);
-		
-		// Detect three sequences, which means that you have to block your opponent.
-		positionTicTacToe forceMove = getForceMove(player);
-		if( forceMove != null ) {
-			return forceMove;
-		}
-		
-		// Detect wining lines, which means that you will win.
-		positionTicTacToe winMove = getWinMove(player);
-		if( winMove != null ) {
-			return winMove;
-		}
-		
-		Random rand = new Random();
-		do {			
-			// We can also randomly choose a strong point.
-			int x = rand.nextInt(4);
-			int y = rand.nextInt(4);
-			int z = rand.nextInt(4);
-			myNextMove = new positionTicTacToe(x,y,z);
-		} while( getStateOfPositionFromBoard(myNextMove, board) != 0 );
-		
-		return myNextMove;
-	
-	}
-	
 	/**
 	 * Method: myAIAlgorithm
 	 * @author TF in CS 640 at Boston University
@@ -118,26 +108,29 @@ public class aiTicTacToeCayden {
 		try {
 			System.out.println("Player" + player + "' turn:");
 			
-			currentBoard = deepCopyATicTacToeBoard(board);
 			this.ByteBoard(board);
-					
+			this.printBoardTicTacToe(board);
+			this.printByteBoard();
 			// Detect three sequences, which means that you have to block your opponent.
-			positionTicTacToe forceMove = getForceMove(player);
-			if( forceMove != null ) {
-				return forceMove;
+			byte forceMove = getForceMove(player);
+			if( forceMove != -1 ) {
+				int[] xyz = oneDToxyz(forceMove);
+				System.out.println("Force move.");
+				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
-			
-			// Detect wining lines, which means that you will win.
-			positionTicTacToe winMove = getWinMove(player);
-			if( winMove != null ) {
-				return winMove;
+						
+			// Detect wining lines, which means that you will win.			
+			byte winMove = getWinMove(player);
+			if( winMove != -1 ) {
+				int[] xyz = oneDToxyz(winMove);
+				System.out.println("Win move");
+				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
-			
-			getAvaliablePositions(currentBoard);
-
+							
 			// if avaliablePositions <= 4
 			// occupy the strongest points
 			// then hard code
+			/*getAvaliablePositions(currentBoard);
 			if( avaliablePositions.size() > 60 ) {						
 				for( int i = 0; i < strongestPositions.length; i++ ) {	
 					positionTicTacToe po = strongestPositions[i];
@@ -148,27 +141,33 @@ public class aiTicTacToeCayden {
 						return myNextMove;
 					}
 				}							
-			}
-			int maxValue = Integer.MIN_VALUE;		
-			for( int i = 0; i < avaliablePositions.size(); i++ ) {
+			}*/
+			
+			int maxValue = Integer.MIN_VALUE;
+			for( int i = 0; i < curBoard.length; i++ ) {
 				
-				positionTicTacToe po = avaliablePositions.get(i);
-				
-				// TODO: backtracking
-				List<positionTicTacToe> newBoard = deepCopyATicTacToeBoard(currentBoard);
-				this.makeMove(po, player, newBoard);
-				
-				int newValue = miniMax(miniMaxDepth, newBoard, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);  // DFS
-				// System.out.println("New Value: " + newValue);
-				
-				// update max value
-				if( newValue > maxValue ) {
-					maxValue = newValue;
-					myNextMove = new positionTicTacToe(po.x, po.y, po.z);
-					// System.out.println("New move: " + po.x + " " + po.y + " " + po.z + " Value: " + maxValue);
-				}				
+				if( curBoard[i] == 0 ) {					
+					// make move
+					System.out.println("Move: " + Arrays.toString(oneDToxyz((byte) i)) + evaluation(player));
+					curBoard[i] = (byte)player;
+					
+					int newValue = miniMax(miniMaxDepth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);					
+					System.out.println("New value: " + newValue);
+					if( newValue > maxValue ) {
+						// update max value
+						maxValue = newValue;						
+						// update my next best move
+						int[] xyz = oneDToxyz((byte) i);
+						myNextMove = new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+					}
+					// cancel move
+					curBoard[i] = 0;  // backtracking
+
+				}
+						
 			}
 			System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
+		
 		}
 		catch( Exception error ) {
 			error.printStackTrace();
@@ -181,93 +180,57 @@ public class aiTicTacToeCayden {
 	 * Method: miniMax
 	 * @author Ziqi Tan
 	 * */
-	private int miniMax(int depth, List<positionTicTacToe> board, int player, boolean maximizingPlayer, /*int value,*/ int alpha, int beta) {
-		
-		if( depth == 0 || isWin(board) ) {
-			// return value;
-			return evaluator(board, player);
+	private int miniMax(int depth, int player, boolean maximizingPlayer, int alpha, int beta) {
+
+		if( depth == 0 || isWin() ) {
+			return evaluation(player);
 		}
 		if( maximizingPlayer ) {
 			
 			int value = Integer.MIN_VALUE;
-			// generate children list
-			getAvaliablePositions(board);
-			// TODO: backtracking
-			List<List<positionTicTacToe>> children = generateChildren(board, player);
 			// for each child do a miniMax recursion
-			for( int i = 0; i < children.size(); i++ ) {
-				List<positionTicTacToe> child = children.get(i);
-				// TODO: force move pruning
-				value = Math.max(value, miniMax(depth - 1, child, player, false, alpha, beta));		
-				alpha = Math.max(alpha, value);
-				if( alpha >= beta ) {
-					break;  // beta pruning
+			for( int i = 0; i < curBoard.length; i++ ) {				
+				if( curBoard[i] == 0 ) {
+					// System.out.println("Maximizer move" + player);
+					curBoard[i] = (byte)player;
+					// System.out.println("Move:" + curBoard[i]);
+					value = Math.max(value, miniMax(depth - 1, player, false, alpha, beta));
+					curBoard[i] = 0; // backtracking
+					alpha = Math.max(alpha, value);
+					if( alpha >= beta ) {
+						break;  // beta pruning
+					}
 				}
 			}
-			// return the maximum value
-			
+			// return the maximum value			
 			return value;
 		}
 		else {
 			// minimizing player
 			int value = Integer.MAX_VALUE;
-			// generate children list
-			getAvaliablePositions(board);
 			int opponent = (player == 1 ? 2 : 1);
-			List<List<positionTicTacToe>> children = generateChildren(board, opponent);
+			
 			// for each child do a miniMax recursion
-			for( int i = 0; i < children.size(); i++ ) {
-				List<positionTicTacToe> child = children.get(i);
-				value = Math.min(value, miniMax(depth - 1, child, player, true, alpha, beta));
-				beta = Math.min(beta, value);
-				if( alpha >= beta ) {
-					break;  // alpha pruning
+			for( int i = 0; i < curBoard.length; i++ ) {
+				if( curBoard[i] == 0 ) {
+					// System.out.println("Minimizer move" + opponent);
+					curBoard[i] = (byte)opponent;
+					// System.out.println("Move:" + curBoard[i]);
+					value = Math.min(value, miniMax(depth - 1, player, true, alpha, beta));
+					curBoard[i] = 0;   // backtracking
+					beta = Math.min(beta, value);
+					if( alpha >= beta ) {
+						break;  // alpha pruning
+					}
 				}
 			}
-			// return the minimum value
-			
+			// return the minimum value			
 			return value;			
 		}
 	}
 	
 	/**
-	 * Method: generateChildren
-	 * @author Ziqi Tan
-	 * */
-	private List<List<positionTicTacToe>> generateChildren(List<positionTicTacToe> board, int player) {
-		List<List<positionTicTacToe>> children = new ArrayList<List<positionTicTacToe>>();
-		
-		for( positionTicTacToe po : avaliablePositions ) {
-			
-			List<positionTicTacToe> child = this.deepCopyATicTacToeBoard(board);
-			this.makeMove(po, player, child);
-			children.add(child);
-		}
-		
-		return children;
-	}
-	
-	/**
-	 * Method: getAvaliablePositions
-	 * @author Ziqi Tan
-	 * @return the positions which have not been marked
-	 * */
-	private void getAvaliablePositions(List<positionTicTacToe> board) {
-		avaliablePositions = new ArrayList<positionTicTacToe>();
-		for ( int i = 0; i < 4; i++ ) {
-			for( int j = 0; j < 4; j++ ) {				
-				for( int k = 0; k < 4; k++ ) {					
-					if( getStateOfPositionFromBoard(new positionTicTacToe(i,j,k), board) == 0 ) {
-						 // The position is not marked
-						avaliablePositions.add( new positionTicTacToe(i,j,k) );
-					}
-				}
-			}
-		}
-	}
-		
-	/**
-	 * Method: evaluator
+	 * Method: evaluation
 	 * @author Ziqi Tan
 	 * Function:
 	 * 		A helper function to evaluate the current board situation.
@@ -278,10 +241,11 @@ public class aiTicTacToeCayden {
 	 * @return
 	 * 		int value
 	 * */
-	private int evaluator(List<positionTicTacToe> board, int player) {
-		
+	private int evaluation(int player) {
+		player = (byte)player;
 		// initialize
 		int opponent = (player == 1 ? 2 : 1);
+		opponent = (byte)opponent;
 		for( int i = 0; i < playerSequenceNum.length; i++ ) {
 			playerSequenceNum[i] = 0;
 		}
@@ -289,19 +253,21 @@ public class aiTicTacToeCayden {
 			opponentSequenceNum[i] = 0;
 		}
 		
-		for(int i = 0; i < winningLines.size(); i++) {
-			positionTicTacToe p0 = winningLines.get(i).get(0);
-			positionTicTacToe p1 = winningLines.get(i).get(1);
-			positionTicTacToe p2 = winningLines.get(i).get(2);
-			positionTicTacToe p3 = winningLines.get(i).get(3);
-
-			int state0 = getStateOfPositionFromBoard(p0, board);
-			int state1 = getStateOfPositionFromBoard(p1, board);
-			int state2 = getStateOfPositionFromBoard(p2, board);
-			int state3 = getStateOfPositionFromBoard(p3, board);
+		for(int i = 0; i < winningLine.length; i++) {
+			
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+			
+			byte state0 = curBoard[p0];
+			byte state1 = curBoard[p1];
+			byte state2 = curBoard[p2];
+			byte state3 = curBoard[p3];
 
 			int playerCounter = 0;
 			int opponentCounter = 0;
+			
 			if(state0 == player) { 
 				playerCounter++; 
 			}
@@ -339,6 +305,9 @@ public class aiTicTacToeCayden {
 					
 		}
 		
+		// System.out.println(Arrays.toString(playerSequenceNum));
+		// System.out.println(Arrays.toString(opponentSequenceNum));
+		
 		int value = 0;
 		for( int i = 0; i < 4; i++ ) {
 			value += playerSequenceNum[i] * playerSequenceValue[i];
@@ -348,112 +317,23 @@ public class aiTicTacToeCayden {
 	}
 	
 	/**
-	 * Method: getForceMove
+	 * Method: isWin
 	 * @author Ziqi Tan
-	 * @param current player
-	 * @return Return the force position or null
-	 * */
-	private positionTicTacToe getForceMove(int player) {
-		
-		int opponent = (player == 1 ? 2 : 1);
-		positionTicTacToe forceMove = null;
-		
-		for(int i = 0; i < winningLines.size(); i++) {
-			
-			positionTicTacToe p0 = winningLines.get(i).get(0);
-			positionTicTacToe p1 = winningLines.get(i).get(1);
-			positionTicTacToe p2 = winningLines.get(i).get(2);
-			positionTicTacToe p3 = winningLines.get(i).get(3);
+	 * Function: check whether the game is end.
+	 * */	
+	private boolean isWin() {
 
-			int state0 = getStateOfPositionFromBoard(p0, currentBoard);
-			int state1 = getStateOfPositionFromBoard(p1, currentBoard);
-			int state2 = getStateOfPositionFromBoard(p2, currentBoard);
-			int state3 = getStateOfPositionFromBoard(p3, currentBoard);
-			
-			if( state0 == opponent && state1 == opponent && state2 == opponent && state3 == 0 ) {
-				forceMove = new positionTicTacToe(p3.x, p3.y, p3.z);
-			}
-			// return blockMove = p3;
-			else if( state0 == opponent && state1 == opponent && state2 == 0 && state3 == opponent ) {
-				forceMove = new positionTicTacToe(p2.x, p2.y, p2.z);
-			}
-			// return blockMove = p2;
-			else if( state0 == opponent && state1 == 0 && state2 == opponent && state3 == opponent ) {
-				forceMove = new positionTicTacToe(p1.x, p1.y, p1.z);
-			}
-			// return blockMove = p1;
-			else if( state0 == 0 && state1 == opponent && state2 == opponent && state3 == opponent ) {
-				forceMove = new positionTicTacToe(p0.x, p0.y, p0.z);
-			}
-		}
-		return forceMove;
-	}
-	
-	/**
-	 * Method: getWinMove
-	 * @author Ziqi Tan
-	 * Function: 
-	 * 		Get the winning move if there is one. 
-	 * 		Traverse all the winningLines.
-	 * @param current player
-	 * @return a tic tac toe position
-	 * */
-	private positionTicTacToe getWinMove(int player) {
-		positionTicTacToe winMove = null;
-		for(int i = 0; i < winningLines.size(); i++) {
-			positionTicTacToe p0 = winningLines.get(i).get(0);
-			positionTicTacToe p1 = winningLines.get(i).get(1);
-			positionTicTacToe p2 = winningLines.get(i).get(2);
-			positionTicTacToe p3 = winningLines.get(i).get(3);
+		for(int i = 0; i < winningLine.length; i++) {
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+						
+			byte state0 = curBoard[p0];
+			byte state1 = curBoard[p1];
+			byte state2 = curBoard[p2];
+			byte state3 = curBoard[p3];
 
-			int state0 = getStateOfPositionFromBoard(p0, currentBoard);
-			int state1 = getStateOfPositionFromBoard(p1, currentBoard);
-			int state2 = getStateOfPositionFromBoard(p2, currentBoard);
-			int state3 = getStateOfPositionFromBoard(p3, currentBoard);
-
-			int playerCounter = 0;
-			if(state0 == player) { playerCounter++; }
-			if(state1 == player) { playerCounter++; }
-			if(state2 == player) { playerCounter++; }
-			if(state3 == player) { playerCounter++; }
-			
-			if( playerCounter == 3 ) {
-				if( state3 == 0 ) {
-					winMove = new positionTicTacToe(p3.x, p3.y, p3.z);				
-					return winMove;
-				}
-				//return blockMove = p3;
-				else if (state2 == 0) {
-					winMove = new positionTicTacToe(p2.x, p2.y, p2.z);				
-					return winMove;
-				}
-				//return blockMove = p2;
-				else if (state1 == 0) {
-					winMove = new positionTicTacToe(p1.x, p1.y, p1.z);				
-					return winMove;
-				}
-				//return blockMove = p1;
-				else if (state0 == 0) {
-					winMove = new positionTicTacToe(p0.x, p0.y, p0.z);				
-					return winMove;
-				}
-			}
-		}
-		return winMove;
-	}
-	
-	public boolean isWin(List<positionTicTacToe> board) {
-
-		for(int i = 0; i < winningLines.size(); i++) {
-			positionTicTacToe p0 = winningLines.get(i).get(0);
-			positionTicTacToe p1 = winningLines.get(i).get(1);
-			positionTicTacToe p2 = winningLines.get(i).get(2);
-			positionTicTacToe p3 = winningLines.get(i).get(3);
-
-			int state0 = getStateOfPositionFromBoard(p0, board);
-			int state1 = getStateOfPositionFromBoard(p1, board);
-			int state2 = getStateOfPositionFromBoard(p2, board);
-			int state3 = getStateOfPositionFromBoard(p3, board);
 			// if they have the same state (marked by same player) and they are not all marked.
 			if ( state0 != 0 && state0 == state1 && state1 == state2 && state2 == state3) {
 				return true;
@@ -462,219 +342,8 @@ public class aiTicTacToeCayden {
 		return false;
 	}
 		
-	/**
-	 * Method: getStateOfPositionFromBoard
-	 * @author TF in CS 640 at Boston University
-	 * Function: 
-	 * 	A helper function to get state of a certain position 
-	 * 	in the Tic-Tac-Toe board by given an instance of class positionTicTacToe.
-	 * */
-	private int getStateOfPositionFromBoard( positionTicTacToe position, List<positionTicTacToe> board ) {
-		int index = position.x*16 + position.y*4 + position.z;
-		return board.get(index).state;
-	}
-	
-	/**
-	 * @author TF in CS 640 at Boston University
-	 * */
-	private List<List<positionTicTacToe>> initializeWinningLines() {
-		// create a list of winning line so that the game will "brute-force" check if a player satisfied any winning condition(s).
-		List<List<positionTicTacToe>> winningLines = new ArrayList<List<positionTicTacToe>>();
-		
-		// 48 straight winning lines
-		// z axis winning lines
-		for( int i = 0; i < 4; i++ )
-			for( int j = 0; j < 4; j++ ) {
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(i,j,0,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,j,1,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,j,2,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,j,3,-1));
-				winningLines.add(oneWinCondtion);
-			}
-		
-		// y axis winning lines
-		for( int i = 0; i < 4; i++ )
-			for( int j = 0; j < 4; j++ ) {
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(i,0,j,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,1,j,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,2,j,-1));
-				oneWinCondtion.add(new positionTicTacToe(i,3,j,-1));
-				winningLines.add(oneWinCondtion);
-			}
-		
-		// x axis winning lines
-		for( int i = 0; i < 4; i++ )
-			for( int j = 0; j <4 ; j++ ){
-				List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-				oneWinCondtion.add(new positionTicTacToe(0,i,j,-1));
-				oneWinCondtion.add(new positionTicTacToe(1,i,j,-1));
-				oneWinCondtion.add(new positionTicTacToe(2,i,j,-1));
-				oneWinCondtion.add(new positionTicTacToe(3,i,j,-1));
-				winningLines.add(oneWinCondtion);
-			}
-		
-		// 12 main diagonal winning lines
-		// xz plane-4
-		for( int i = 0; i < 4; i++ ) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-			oneWinCondtion.add(new positionTicTacToe(0,i,0,-1));
-			oneWinCondtion.add(new positionTicTacToe(1,i,1,-1));
-			oneWinCondtion.add(new positionTicTacToe(2,i,2,-1));
-			oneWinCondtion.add(new positionTicTacToe(3,i,3,-1));
-			winningLines.add(oneWinCondtion);
-		}
-		//yz plane-4
-		for( int i = 0; i < 4; i++ ) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-			oneWinCondtion.add(new positionTicTacToe(i,0,0,-1));
-			oneWinCondtion.add(new positionTicTacToe(i,1,1,-1));
-			oneWinCondtion.add(new positionTicTacToe(i,2,2,-1));
-			oneWinCondtion.add(new positionTicTacToe(i,3,3,-1));
-			winningLines.add(oneWinCondtion);
-		}
-		// xy plane-4
-		for( int i = 0; i < 4; i++ ) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-			oneWinCondtion.add(new positionTicTacToe(0,0,i,-1));
-			oneWinCondtion.add(new positionTicTacToe(1,1,i,-1));
-			oneWinCondtion.add(new positionTicTacToe(2,2,i,-1));
-			oneWinCondtion.add(new positionTicTacToe(3,3,i,-1));
-			winningLines.add(oneWinCondtion);
-		}
-		
-		//12 anti diagonal winning lines
-		//xz plane-4
-		for( int i = 0; i < 4; i++ ) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-			oneWinCondtion.add(new positionTicTacToe(0,i,3,-1));
-			oneWinCondtion.add(new positionTicTacToe(1,i,2,-1));
-			oneWinCondtion.add(new positionTicTacToe(2,i,1,-1));
-			oneWinCondtion.add(new positionTicTacToe(3,i,0,-1));
-			winningLines.add(oneWinCondtion);
-		}
-		// yz plane-4
-		for( int i = 0; i < 4; i++ ) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-			oneWinCondtion.add(new positionTicTacToe(i,0,3,-1));
-			oneWinCondtion.add(new positionTicTacToe(i,1,2,-1));
-			oneWinCondtion.add(new positionTicTacToe(i,2,1,-1));
-			oneWinCondtion.add(new positionTicTacToe(i,3,0,-1));
-			winningLines.add(oneWinCondtion);
-		}
-		//xy plane-4
-		for(int i = 0; i<4; i++) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-			oneWinCondtion.add(new positionTicTacToe(0,3,i,-1));
-			oneWinCondtion.add(new positionTicTacToe(1,2,i,-1));
-			oneWinCondtion.add(new positionTicTacToe(2,1,i,-1));
-			oneWinCondtion.add(new positionTicTacToe(3,0,i,-1));
-			winningLines.add(oneWinCondtion);
-		}
-		
-		//4 additional diagonal winning lines
-		List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
-		oneWinCondtion.add(new positionTicTacToe(0,0,0,-1));
-		oneWinCondtion.add(new positionTicTacToe(1,1,1,-1));
-		oneWinCondtion.add(new positionTicTacToe(2,2,2,-1));
-		oneWinCondtion.add(new positionTicTacToe(3,3,3,-1));
-		winningLines.add(oneWinCondtion);
-		
-		oneWinCondtion = new ArrayList<positionTicTacToe>();
-		oneWinCondtion.add(new positionTicTacToe(0,0,3,-1));
-		oneWinCondtion.add(new positionTicTacToe(1,1,2,-1));
-		oneWinCondtion.add(new positionTicTacToe(2,2,1,-1));
-		oneWinCondtion.add(new positionTicTacToe(3,3,0,-1));
-		winningLines.add(oneWinCondtion);
-		
-		oneWinCondtion = new ArrayList<positionTicTacToe>();
-		oneWinCondtion.add(new positionTicTacToe(3,0,0,-1));
-		oneWinCondtion.add(new positionTicTacToe(2,1,1,-1));
-		oneWinCondtion.add(new positionTicTacToe(1,2,2,-1));
-		oneWinCondtion.add(new positionTicTacToe(0,3,3,-1));
-		winningLines.add(oneWinCondtion);
-		
-		oneWinCondtion = new ArrayList<positionTicTacToe>();
-		oneWinCondtion.add(new positionTicTacToe(0,3,0,-1));
-		oneWinCondtion.add(new positionTicTacToe(1,2,1,-1));
-		oneWinCondtion.add(new positionTicTacToe(2,1,2,-1));
-		oneWinCondtion.add(new positionTicTacToe(3,0,3,-1));
-		winningLines.add(oneWinCondtion);	
-		
-		return winningLines;
-		
-	}
-	
-	public void printBoardTicTacToe(List<positionTicTacToe> targetBoard) {
 
-		for ( int i = 0; i < 4; i++ ) {
-			System.out.println("level(z) "+i);
-			for( int j = 0; j < 4; j++ ) {
-				System.out.print("["); // boundary
-				for( int k = 0; k < 4; k++ ) {
-					if ( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 1 ) {
-						System.out.print("X"); //print cross "X" for position marked by player 1
-					}
-					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 2 ) {
-						System.out.print("O"); //print cross "O" for position marked by player 2
-					}
-					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 0 ) {
-						System.out.print("_"); //print "_" if the position is not marked
-					}
-					if( k == 3 ) {
-						System.out.print("]"); // boundary
-						System.out.println();
-					}					
-				}
-			}
-			System.out.println();
-		}
-	}
-	
-	/**
-	 * Method: deepCopyATicTacToeBoard
-	 * Function: Deep copy a game board.
-	 * @author TF in CS 640 at Boston University
-	 * @param List<positionTicTacToe>
-	 * @return List<positionTicTacToe>
-	 * */
-	private List<positionTicTacToe> deepCopyATicTacToeBoard(List<positionTicTacToe> board) {
-		// deep copy of game boards
-		List<positionTicTacToe> copiedBoard = new ArrayList<positionTicTacToe>();
-		for( int i = 0; i < board.size(); i++ ) {
-			copiedBoard.add(new positionTicTacToe(board.get(i).x, board.get(i).y, board.get(i).z, board.get(i).state));
-		}
-		return copiedBoard;
-	}
-	
-	/**
-	 * Method: makeMove
-	 * Function: make a move on a board.
-	 * @author Ziqi Tan
-	 * @return 
-	 * */
-	private boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> targetBoard) {
-		// make move on Tic-Tac-Toe board, given position and player 
-		// player 1 = 1, player 2 = 2
-		
-		// brute force (obviously not a wise way though)
-		for( int i = 0; i < targetBoard.size(); i++ ) {
-			// if this is the position
-			if( targetBoard.get(i).x == position.x && targetBoard.get(i).y == position.y && targetBoard.get(i).z == position.z )  {
-				if( targetBoard.get(i).state == 0 ) {
-					targetBoard.get(i).state = player;
-					return true;
-				}
-				else {
-					System.out.println("Error: this is not a valid move.");
-				}
-			}
-			
-		}
-		return false;
-	}
-	
+				
 	/**
 	 * Method: getByteBoard
 	 * @author Kaijia You
@@ -682,17 +351,39 @@ public class aiTicTacToeCayden {
 	private byte[] ByteBoard(List<positionTicTacToe> board) {
 		for(int i = 0;i < board.size();i++) {
 			curBoard[i] = (byte)board.get(i).state;
-		}
-		
+		}	
 		return curBoard;
 	}
 	
 	/**
 	 * Method: xyzTo1d
 	 * @author Kaijia You
+	 * Function: Transform 3 dimension coordination to 1 dimension.
+	 * @param int x, y, z
+	 * 
+	 * @return byte index
 	 * */
 	private byte xyzTo1d(int i, int j, int k) {
 		return (byte)(i * 16 + j * 4 + k);
+	}
+	
+	/**
+	 * Method: oneDToxyz
+	 * @author Kaijia You
+	 * Function: Transform 1 dimension coordination to 3 dimension.
+	 * @return int[]{x, y, z} 
+	 * */
+	private int[] oneDToxyz(byte index) {
+		
+		int i = (int)index;
+		
+		int x = i/16;
+		i -= x*16;
+		int y = i/4;
+		i -= y*4;
+		int z = i/1;
+		
+		return new int[]{x, y, z};
 	}
 	
 	/**
@@ -704,7 +395,6 @@ public class aiTicTacToeCayden {
 		// this.winningLine
 		int count = 0;
 		// create a list of winning line so that the game will "brute-force" check if a player satisfied any winning condition(s).
-		List<List<positionTicTacToe>> winningLines = new ArrayList<List<positionTicTacToe>>();
 		
 		// 48 straight winning lines
 		// z axis winning lines
@@ -782,7 +472,6 @@ public class aiTicTacToeCayden {
 		}
 		//xy plane-4
 		for(int i = 0; i<4; i++) {
-			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
 			winningLine[count][0] = xyzTo1d(0, 3, i);
 			winningLine[count][1] = xyzTo1d(1, 2, i);
 			winningLine[count][2] = xyzTo1d(2, 1, i);
@@ -818,15 +507,44 @@ public class aiTicTacToeCayden {
 	}
 	
 	/**
-	 * Method: getForceMoveFromByte
+	 * Method: getForceMove
 	 * @author Tian Ding
 	 * Function: get a force move if your opponent has a three-in-a-row
 	 * @return Return the force position or null
 	 * */
-	private positionTicTacToe getForceMoveFromByte(int player) {
+	private byte getForceMove(int player) {
+		int opponent = (player == 1 ? 2 : 1);
+		opponent = (byte)opponent;
+		byte forceMove = -1;
 		
-		
-		return null;
+		for(int i = 0; i < winningLine.length; i++) {
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+				
+			int state0 = curBoard[p0];
+			int state1 = curBoard[p1];
+			int state2 = curBoard[p2];
+			int state3 = curBoard[p3];
+				
+			if( state0 == opponent && state1 == opponent && state2 == opponent && state3 == 0 ) {
+				forceMove = p3;
+			}
+			// return blockMove = p3;
+			else if( state0 == opponent && state1 == opponent && state2 == 0 && state3 == opponent ) {
+				forceMove = p2;
+			}
+			// return blockMove = p2;
+			else if( state0 == opponent && state1 == 0 && state2 == opponent && state3 == opponent ) {
+				forceMove = p1;
+			}
+			// return blockMove = p1;
+			else if( state0 == 0 && state1 == opponent && state2 == opponent && state3 == opponent ) {
+				forceMove = p0;
+			}
+		}
+		return forceMove;
 	}
 	
 	/**
@@ -838,7 +556,7 @@ public class aiTicTacToeCayden {
 	 * @param current player
 	 * @return a tic tac toe position
 	 * */
-	private byte getWinMoveFromByte(int player) {
+	private byte getWinMove(int player) {
 		byte winMove = -1;
 		player = (byte)player;
 		
@@ -885,5 +603,102 @@ public class aiTicTacToeCayden {
 			}
 		}
 		return winMove;
+	}
+	
+	/**
+	 * Method: getStateOfPositionFromBoard
+	 * @author TF in CS 640 at Boston University
+	 * Function: 
+	 * 	A helper function to get state of a certain position 
+	 * 	in the Tic-Tac-Toe board by given an instance of class positionTicTacToe.
+	 * */
+	private int getStateOfPositionFromBoard( positionTicTacToe position, List<positionTicTacToe> board ) {
+		int index = position.x*16 + position.y*4 + position.z;
+		return board.get(index).state;
+	}
+	
+	/**
+	 * A Test.
+	 * */
+	public positionTicTacToe myAIAlgorithm2(List<positionTicTacToe> board, int player) {
+				
+		// Detect three sequences, which means that you have to block your opponent.
+		byte forceMove = getForceMove(player);
+		if( forceMove != -1 ) {
+			int[] xyz = oneDToxyz(forceMove);
+			return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+		}
+					
+		// Detect wining lines, which means that you will win.			
+		byte winMove = getWinMove(player);
+		if( winMove != -1 ) {
+			int[] xyz = oneDToxyz(winMove);
+			return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+		}
+		
+		Random rand = new Random();
+		do {			
+			// We can also randomly choose a strong point.
+			int x = rand.nextInt(4);
+			int y = rand.nextInt(4);
+			int z = rand.nextInt(4);
+			myNextMove = new positionTicTacToe(x,y,z);
+		} while( getStateOfPositionFromBoard(myNextMove, board) != 0 );
+		
+		return myNextMove;
+	
+	}
+	
+	public void printBoardTicTacToe(List<positionTicTacToe> targetBoard) {
+
+		for ( int i = 0; i < 4; i++ ) {
+			System.out.println("level(z) "+i);
+			for( int j = 0; j < 4; j++ ) {
+				System.out.print("["); // boundary
+				for( int k = 0; k < 4; k++ ) {
+					if ( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 1 ) {
+						System.out.print("X"); //print cross "X" for position marked by player 1
+					}
+					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 2 ) {
+						System.out.print("O"); //print cross "O" for position marked by player 2
+					}
+					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 0 ) {
+						System.out.print("_"); //print "_" if the position is not marked
+					}
+					if( k == 3 ) {
+						System.out.print("]"); // boundary
+						System.out.println();
+					}					
+				}
+			}
+			System.out.println();
+		}
+	}
+	
+	private void printByteBoard() {
+		for ( int i = 0; i < 4; i++ ) {
+			System.out.println("level(z) "+i);
+			for( int j = 0; j < 4; j++ ) {
+				System.out.print("["); // boundary
+				for( int k = 0; k < 4; k++ ) {
+					if ( curBoard[(int)this.xyzTo1d(j, k, i)] == 1 ) {
+						System.out.print("X"); //print cross "X" for position marked by player 1
+					}
+					else if( curBoard[(int)this.xyzTo1d(j, k, i)] == 2  ) {
+						System.out.print("O"); //print cross "O" for position marked by player 2
+					}
+					else if( curBoard[(int)this.xyzTo1d(j, k, i)] == 0 ) {
+						System.out.print("_"); //print "_" if the position is not marked
+					}
+					if( k == 3 ) {
+						System.out.print("]"); // boundary
+						System.out.println();
+					}					
+				}
+			}
+			System.out.println();
+		}
+		
+		
 	}
 }

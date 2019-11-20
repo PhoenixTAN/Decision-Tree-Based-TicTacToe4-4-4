@@ -117,7 +117,9 @@ public class aiTicTacToe {
 							
 		try {
 			System.out.println("Player" + player + "' turn:");
+			
 			currentBoard = deepCopyATicTacToeBoard(board);
+			this.ByteBoard(board);
 					
 			// Detect three sequences, which means that you have to block your opponent.
 			positionTicTacToe forceMove = getForceMove(player);
@@ -813,6 +815,18 @@ public class aiTicTacToe {
 		winningLine[count][3] = xyzTo1d(3, 0, 3);
 		count++;
 		
+	}
+	
+	/**
+	 * Method: getForceMoveFromByte
+	 * @author Tian Ding
+	 * Function: get a force move if your opponent has a three-in-a-row
+	 * @return Return the force position or null
+	 * */
+	private positionTicTacToe getForceMoveFromByte() {
+		
+		
+		return null;
 	}
 	
 }

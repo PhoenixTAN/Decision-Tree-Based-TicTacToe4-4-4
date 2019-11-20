@@ -56,6 +56,22 @@ public class aiTicTacToe {
 			new positionTicTacToe(2, 2, 1),
 			new positionTicTacToe(1, 1, 2)		
 	};
+	
+	private static final int[] corePoints = {
+		
+	};
+	
+	private static final int[] cornerPoints = {
+			
+	};
+	
+	private static final int[] otherPoints = {
+			
+	};
+	
+	private static final int[] traverseOrder = {
+			
+	};
 
 	/**
 	 * Constructor
@@ -65,37 +81,9 @@ public class aiTicTacToe {
 	 * */
 	public aiTicTacToe( int setPlayer ) {		
 		player = setPlayer;
+		this.getWinningLines();
 	}
-	
-	public positionTicTacToe myAIAlgorithm2(List<positionTicTacToe> board, int player) {
 		
-		currentBoard = deepCopyATicTacToeBoard(board);
-		
-		// Detect three sequences, which means that you have to block your opponent.
-		/*positionTicTacToe forceMove = getForceMove(player);
-		if( forceMove != null ) {
-			return forceMove;
-		}*/
-		
-		// Detect wining lines, which means that you will win.
-		/*positionTicTacToe winMove = getWinMove(player);
-		if( winMove != null ) {
-			return winMove;
-		}*/
-		
-		Random rand = new Random();
-		do {			
-			// We can also randomly choose a strong point.
-			int x = rand.nextInt(4);
-			int y = rand.nextInt(4);
-			int z = rand.nextInt(4);
-			myNextMove = new positionTicTacToe(x,y,z);
-		} while( getStateOfPositionFromBoard(myNextMove, board) != 0 );
-		
-		return myNextMove;
-	
-	}
-	
 	/**
 	 * Method: myAIAlgorithm
 	 * @author TF in CS 640 at Boston University
@@ -122,30 +110,25 @@ public class aiTicTacToe {
 			this.ByteBoard(board);
 					
 			// Detect three sequences, which means that you have to block your opponent.
-			/*positionTicTacToe forceMove = getForceMove(player);
-			if( forceMove != null ) {
-				return forceMove;
-			}*/
-			
-			
-			// Detect wining lines, which means that you will win.
-			/*positionTicTacToe winMove = getWinMove(player);
-			if( winMove != null ) {
-				return winMove;
-			}*/
-			
-			/*byte winMove = getWinMoveFromByte(player);
+			byte forceMove = getForceMove(player);
+			if( forceMove != -1 ) {
+				int[] xyz = oneDToxyz(forceMove);
+				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+			}
+						
+			// Detect wining lines, which means that you will win.			
+			byte winMove = getWinMove(player);
 			if( winMove != -1 ) {
-				this.xyzTo1d(i, j, k)
-				return 
-			}*/
-				
+				int[] xyz = oneDToxyz(winMove);
+				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+			}
+							
 			
-			getAvaliablePositions(currentBoard);
 
 			// if avaliablePositions <= 4
 			// occupy the strongest points
 			// then hard code
+			getAvaliablePositions(currentBoard);
 			if( avaliablePositions.size() > 60 ) {						
 				for( int i = 0; i < strongestPositions.length; i++ ) {	
 					positionTicTacToe po = strongestPositions[i];
@@ -157,6 +140,7 @@ public class aiTicTacToe {
 					}
 				}							
 			}
+			
 			int maxValue = Integer.MIN_VALUE;		
 			for( int i = 0; i < avaliablePositions.size(); i++ ) {
 				
@@ -177,6 +161,7 @@ public class aiTicTacToe {
 				}				
 			}
 			System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
+		
 		}
 		catch( Exception error ) {
 			error.printStackTrace();
@@ -368,7 +353,7 @@ public class aiTicTacToe {
 	 * 		int value
 	 * */
 	private int evaluation(int player) {
-		
+		player = (byte)player;
 		// initialize
 		int opponent = (player == 1 ? 2 : 1);
 		for( int i = 0; i < playerSequenceNum.length; i++ ) {
@@ -469,9 +454,7 @@ public class aiTicTacToe {
 		int index = position.x*16 + position.y*4 + position.z;
 		return board.get(index).state;
 	}
-	
-
-		
+			
 	/**
 	 * Method: deepCopyATicTacToeBoard
 	 * Function: Deep copy a game board.
@@ -679,12 +662,12 @@ public class aiTicTacToe {
 	}
 	
 	/**
-	 * Method: getForceMoveFromByte
+	 * Method: getForceMove
 	 * @author Tian Ding
 	 * Function: get a force move if your opponent has a three-in-a-row
 	 * @return Return the force position or null
 	 * */
-	private byte getForceMoveFromByte(int player) {
+	private byte getForceMove(int player) {
 		int opponent = (player == 1 ? 2 : 1);
 		byte forceMove = -1;
 		
@@ -727,7 +710,7 @@ public class aiTicTacToe {
 	 * @param current player
 	 * @return a tic tac toe position
 	 * */
-	private byte getWinMoveFromByte(int player) {
+	private byte getWinMove(int player) {
 		byte winMove = -1;
 		player = (byte)player;
 		
@@ -775,8 +758,40 @@ public class aiTicTacToe {
 		}
 		return winMove;
 	}
-
 	
+	/**
+	 * A Test.
+	 * */
+	public positionTicTacToe myAIAlgorithm2(List<positionTicTacToe> board, int player) {
+		
+		currentBoard = deepCopyATicTacToeBoard(board);
+		
+		// Detect three sequences, which means that you have to block your opponent.
+		byte forceMove = getForceMove(player);
+		if( forceMove != -1 ) {
+			int[] xyz = oneDToxyz(forceMove);
+			return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+		}
+					
+		// Detect wining lines, which means that you will win.			
+		byte winMove = getWinMove(player);
+		if( winMove != -1 ) {
+			int[] xyz = oneDToxyz(winMove);
+			return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+		}
+		
+		Random rand = new Random();
+		do {			
+			// We can also randomly choose a strong point.
+			int x = rand.nextInt(4);
+			int y = rand.nextInt(4);
+			int z = rand.nextInt(4);
+			myNextMove = new positionTicTacToe(x,y,z);
+		} while( getStateOfPositionFromBoard(myNextMove, board) != 0 );
+		
+		return myNextMove;
+	
+	}
 	
 	
 }

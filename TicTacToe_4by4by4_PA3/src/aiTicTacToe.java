@@ -674,7 +674,7 @@ public class aiTicTacToe {
 	}
 	
 	/**
-	 * Method: makeAByteBoard
+	 * Method: getByteBoard
 	 * @author Kaijia You
 	 * */
 	private byte[] ByteBoard(List<positionTicTacToe> board) {
@@ -686,12 +686,133 @@ public class aiTicTacToe {
 	}
 	
 	/**
+	 * Method: xyzTo1d
+	 * @author Kaijia You
+	 * */
+	private byte xyzTo1d(int i, int j, int k) {
+		return (byte)(i * 16 + j * 4 + k);
+	}
+	
+	/**
 	 * Method: initializeWinningLines
 	 * @author Kaijia You
 	 * Function: Store all 76 winning lines in a byte[76][4] array.
 	 * */
 	private void getWinningLines() {
 		// this.winningLine
+		int count = 0;
+		// create a list of winning line so that the game will "brute-force" check if a player satisfied any winning condition(s).
+		List<List<positionTicTacToe>> winningLines = new ArrayList<List<positionTicTacToe>>();
+		
+		// 48 straight winning lines
+		// z axis winning lines
+		for( int i = 0; i < 4; i++ )
+			for( int j = 0; j < 4; j++ ) {		
+				winningLine[count][0] = xyzTo1d(i, j, 0);
+				winningLine[count][1] = xyzTo1d(i, j, 1);
+				winningLine[count][2] = xyzTo1d(i, j, 2);
+				winningLine[count][3] = xyzTo1d(i, j, 3);
+				count++;
+			}
+		
+		// y axis winning lines
+		for( int i = 0; i < 4; i++ )
+			for( int j = 0; j < 4; j++ ) {
+				winningLine[count][0] = xyzTo1d(i, 0, j);
+				winningLine[count][1] = xyzTo1d(i, 1, j);
+				winningLine[count][2] = xyzTo1d(i, 2, j);
+				winningLine[count][3] = xyzTo1d(i, 3, j);
+				count++;
+			}
+		
+		// x axis winning lines
+		for( int i = 0; i < 4; i++ )
+			for( int j = 0; j <4 ; j++ ){
+				winningLine[count][0] = xyzTo1d(0, i, j);
+				winningLine[count][1] = xyzTo1d(0, i, j);
+				winningLine[count][2] = xyzTo1d(0, i, j);
+				winningLine[count][3] = xyzTo1d(0, i, j);
+				count++;
+			}
+		
+		// 12 main diagonal winning lines
+		// xz plane-4
+		for( int i = 0; i < 4; i++ ) {
+			winningLine[count][0] = xyzTo1d(0, i, 0);
+			winningLine[count][1] = xyzTo1d(0, i, 1);
+			winningLine[count][2] = xyzTo1d(0, i, 2);
+			winningLine[count][3] = xyzTo1d(0, i, 3);
+			count++;
+		}
+		//yz plane-4
+		for( int i = 0; i < 4; i++ ) {
+			winningLine[count][0] = xyzTo1d(i, 0, 0);
+			winningLine[count][1] = xyzTo1d(i, 1, 1);
+			winningLine[count][2] = xyzTo1d(i, 2, 2);
+			winningLine[count][3] = xyzTo1d(i, 3, 3);
+			count++;
+		}
+		// xy plane-4
+		for( int i = 0; i < 4; i++ ) {
+			winningLine[count][0] = xyzTo1d(0, 0, i);
+			winningLine[count][1] = xyzTo1d(1, 1, i);
+			winningLine[count][2] = xyzTo1d(2, 2, i);
+			winningLine[count][3] = xyzTo1d(3, 3, i);
+			count++;
+		}
+		
+		//12 anti diagonal winning lines
+		//xz plane-4
+		for( int i = 0; i < 4; i++ ) {
+			winningLine[count][0] = xyzTo1d(0, i, 3);
+			winningLine[count][1] = xyzTo1d(1, i, 2);
+			winningLine[count][2] = xyzTo1d(2, i, 1);
+			winningLine[count][3] = xyzTo1d(3, i, 0);
+			count++;
+		}
+		// yz plane-4
+		for( int i = 0; i < 4; i++ ) {
+			winningLine[count][0] = xyzTo1d(i, 0, 3);
+			winningLine[count][1] = xyzTo1d(i, 1, 2);
+			winningLine[count][2] = xyzTo1d(i, 2, 1);
+			winningLine[count][3] = xyzTo1d(i, 3, 0);
+			count++;
+		}
+		//xy plane-4
+		for(int i = 0; i<4; i++) {
+			List<positionTicTacToe> oneWinCondtion = new ArrayList<positionTicTacToe>();
+			winningLine[count][0] = xyzTo1d(0, 3, i);
+			winningLine[count][1] = xyzTo1d(1, 2, i);
+			winningLine[count][2] = xyzTo1d(2, 1, i);
+			winningLine[count][3] = xyzTo1d(3, 0, i);
+			count++;
+		}
+		
+		//4 additional diagonal winning lines
+		winningLine[count][0] = xyzTo1d(0, 0, 0);
+		winningLine[count][1] = xyzTo1d(1, 1, 1);
+		winningLine[count][2] = xyzTo1d(2, 2, 2);
+		winningLine[count][3] = xyzTo1d(3, 3, 3);
+		count++;
+		
+		winningLine[count][0] = xyzTo1d(0, 0, 3);
+		winningLine[count][1] = xyzTo1d(1, 1, 2);
+		winningLine[count][2] = xyzTo1d(2, 2, 1);
+		winningLine[count][3] = xyzTo1d(3, 3, 0);
+		count++;
+		
+		winningLine[count][0] = xyzTo1d(3, 0, 0);
+		winningLine[count][1] = xyzTo1d(2, 1, 1);
+		winningLine[count][2] = xyzTo1d(1, 2, 2);
+		winningLine[count][3] = xyzTo1d(0, 3, 3);
+		count++;
+		
+		winningLine[count][0] = xyzTo1d(0, 3, 0);
+		winningLine[count][1] = xyzTo1d(1, 2, 1);
+		winningLine[count][2] = xyzTo1d(2, 1, 2);
+		winningLine[count][3] = xyzTo1d(3, 0, 3);
+		count++;
+		
 	}
 	
 }

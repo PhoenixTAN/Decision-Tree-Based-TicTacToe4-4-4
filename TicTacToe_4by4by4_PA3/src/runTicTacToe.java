@@ -341,7 +341,7 @@ public class runTicTacToe {
 
 		Random rand = new Random();
 		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
-		int turn = 2;
+		int turn = 1;
 		firstPlayer = turn;
 		//game loop
 		while( ( result = isEnded() ) == 0 ) {
@@ -352,7 +352,8 @@ public class runTicTacToe {
 				System.out.println("Player 1 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player1NextMove,1,board))
 					turn = 2;
-				// this.printBoardTicTacToe(board);
+				this.printBoardTicTacToe(board);
+				System.out.println();
 			}
 			else if( turn == 2 ) {
 				long time1 = System.currentTimeMillis();
@@ -376,6 +377,7 @@ public class runTicTacToe {
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))
 					turn = 1;
+				System.out.println();
 			}
 			else  {
 				//exception occurs, stop

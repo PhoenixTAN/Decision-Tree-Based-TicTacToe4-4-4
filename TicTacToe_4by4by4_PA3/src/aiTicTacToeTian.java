@@ -816,5 +816,44 @@ public class aiTicTacToeTian {
 		count++;
 		
 	}
+	/**
+	 * Method: getForceMoveFromByte
+	 * @author Tian Ding
+	 * Function: get a force move if your opponent has a three-in-a-row
+	 * @return Return the force position or null
+	 * */
+	private byte getForceMoveFromByte(int player) {
+		int opponent = (player == 1 ? 2 : 1);
+		byte forceMove = -1;
+		
+		for(int i = 0; i < winningLine.length; i++) {
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+				
+			int state0 = curBoard[p0];
+			int state1 = curBoard[p1];
+			int state2 = curBoard[p2];
+			int state3 = curBoard[p3];
+				
+			if( state0 == opponent && state1 == opponent && state2 == opponent && state3 == 0 ) {
+				forceMove = p3;
+			}
+			// return blockMove = p3;
+			else if( state0 == opponent && state1 == opponent && state2 == 0 && state3 == opponent ) {
+				forceMove = p2;
+			}
+			// return blockMove = p2;
+			else if( state0 == opponent && state1 == 0 && state2 == opponent && state3 == opponent ) {
+				forceMove = p1;
+			}
+			// return blockMove = p1;
+			else if( state0 == 0 && state1 == opponent && state2 == opponent && state3 == opponent ) {
+				forceMove = p0;
+			}
+		}
+		return forceMove;
+	}
 	
 }

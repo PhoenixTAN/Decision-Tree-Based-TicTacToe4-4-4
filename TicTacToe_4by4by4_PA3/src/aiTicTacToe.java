@@ -30,6 +30,7 @@ public class aiTicTacToe {
 	private static int[] opponentSequenceNum = new int[4];
 	
 	private static byte[] curBoard = new byte[64];
+	private static byte[][] winningLine = new byte[76][4];
 	
 	private static List<positionTicTacToe> avaliablePositions;
 	
@@ -684,6 +685,13 @@ public class aiTicTacToe {
 		return curBoard;
 	}
 	
-	
+	/**
+	 * Method: initializeWinningLines
+	 * @author Kaijia You
+	 * Function: Store all 76 winning lines in a byte[76][4] array.
+	 * */
+	private void getWinningLines() {
+		// this.winningLine
+	}
 	
 }

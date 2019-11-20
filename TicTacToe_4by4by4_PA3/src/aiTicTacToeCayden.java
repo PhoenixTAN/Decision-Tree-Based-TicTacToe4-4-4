@@ -1,6 +1,4 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Class: aiTicTacToe
@@ -119,7 +117,9 @@ public class aiTicTacToeCayden {
 							
 		try {
 			System.out.println("Player" + player + "' turn:");
+			
 			currentBoard = deepCopyATicTacToeBoard(board);
+			this.ByteBoard(board);
 					
 			// Detect three sequences, which means that you have to block your opponent.
 			positionTicTacToe forceMove = getForceMove(player);
@@ -817,4 +817,71 @@ public class aiTicTacToeCayden {
 		
 	}
 	
+	/**
+	 * Method: getForceMoveFromByte
+	 * @author Tian Ding
+	 * Function: get a force move if your opponent has a three-in-a-row
+	 * @return Return the force position or null
+	 * */
+	private positionTicTacToe getForceMoveFromByte(int player) {
+		
+		
+		return null;
+	}
+	
+	/**
+	 * Method: getWinMoveFromByte
+	 * @author Kaijia You
+	 * Function: 
+	 * 		Get the winning move if there is one. 
+	 * 		Traverse all the winningLines.
+	 * @param current player
+	 * @return a tic tac toe position
+	 * */
+	private byte getWinMoveFromByte(byte player) {
+		byte winMove = (Byte) null;
+		for(int i = 0;i < winningLine.length;i++) {
+			byte p0 = winningLine[i][0];
+			byte p1 = winningLine[i][1];
+			byte p2 = winningLine[i][2];
+			byte p3 = winningLine[i][3];
+			
+			int playerCounter = 0;
+			if(p0 == player) {
+				playerCounter++;
+			}
+			if(p1 == player) {
+				playerCounter++;
+			}
+			if(p2 == player) {
+				playerCounter++;
+			}
+			if(p3 == player) {
+				playerCounter++;
+			}
+			
+			if(playerCounter == 3) {
+				if( p3 == 0 ) {
+					winMove = p3;				
+					return winMove;
+				}
+				//return blockMove = p3;
+				else if (p2 == 0) {
+					winMove = p2;				
+					return winMove;
+				}
+				//return blockMove = p2;
+				else if (p1 == 0) {
+					winMove = p1;				
+					return winMove;
+				}
+				//return blockMove = p1;
+				else if (p0 == 0) {
+					winMove = p0;				
+					return winMove;
+				}
+			}
+		}
+		return winMove;
+	}
 }

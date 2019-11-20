@@ -823,10 +823,26 @@ public class aiTicTacToe {
 	 * Function: get a force move if your opponent has a three-in-a-row
 	 * @return Return the force position or null
 	 * */
-	private positionTicTacToe getForceMoveFromByte() {
+	private positionTicTacToe getForceMoveFromByte(int player) {
 		
 		
 		return null;
 	}
+	
+	/**
+	 * Method: getWinMoveFromByte
+	 * @author Kaijia You
+	 * Function: 
+	 * 		Get the winning move if there is one. 
+	 * 		Traverse all the winningLines.
+	 * @param current player
+	 * @return a tic tac toe position
+	 * */
+	private positionTicTacToe getWinMoveFromByte(int player) {
+		
+		return null;
+	}
+	
+	
 	
 }

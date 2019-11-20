@@ -35,9 +35,9 @@ public class aiTicTacToe {
 	 * Private static final variables
 	 * @author Ziqi Tan
 	 * */
-	private static final int[] playerSequenceValue = new int[] {1, 15, 150, 100000};
-	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
-	private static final int miniMaxDepth = 3;
+	private static final int[] playerSequenceValue = new int[] {1, 10, 50, 100000};
+	private static final int[] opponentSequenceValue = new int[] {-1, -10, -50, -100000};
+	private static final int miniMaxDepth = 4;
 	
 	private static final positionTicTacToe[] strongestPositions = {
 			new positionTicTacToe(1, 1, 1),
@@ -103,8 +103,6 @@ public class aiTicTacToe {
 			System.out.println("Player" + player + "' turn:");
 			
 			this.ByteBoard(board);
-			this.printBoardTicTacToe(board);
-			this.printByteBoard();
 			// Detect three sequences, which means that you have to block your opponent.
 			byte forceMove = getForceMove(player);
 			if( forceMove != -1 ) {
@@ -142,11 +140,11 @@ public class aiTicTacToe {
 				
 				if( curBoard[i] == 0 ) {					
 					// make move
-					System.out.println("Move: " + Arrays.toString(oneDToxyz((byte) i)) + evaluation(player));
+					// System.out.println("Move: " + Arrays.toString(oneDToxyz((byte) i)) + evaluation(player));
 					curBoard[i] = (byte)player;
 					
 					int newValue = miniMax(miniMaxDepth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);					
-					System.out.println("New value: " + newValue);
+					// System.out.println("New value: " + newValue);
 					if( newValue > maxValue ) {
 						// update max value
 						maxValue = newValue;						
@@ -415,9 +413,9 @@ public class aiTicTacToe {
 		for( int i = 0; i < 4; i++ )
 			for( int j = 0; j <4 ; j++ ){
 				winningLine[count][0] = xyzTo1d(0, i, j);
-				winningLine[count][1] = xyzTo1d(0, i, j);
-				winningLine[count][2] = xyzTo1d(0, i, j);
-				winningLine[count][3] = xyzTo1d(0, i, j);
+				winningLine[count][1] = xyzTo1d(1, i, j);
+				winningLine[count][2] = xyzTo1d(2, i, j);
+				winningLine[count][3] = xyzTo1d(3, i, j);
 				count++;
 			}
 		
@@ -425,9 +423,9 @@ public class aiTicTacToe {
 		// xz plane-4
 		for( int i = 0; i < 4; i++ ) {
 			winningLine[count][0] = xyzTo1d(0, i, 0);
-			winningLine[count][1] = xyzTo1d(0, i, 1);
-			winningLine[count][2] = xyzTo1d(0, i, 2);
-			winningLine[count][3] = xyzTo1d(0, i, 3);
+			winningLine[count][1] = xyzTo1d(1, i, 1);
+			winningLine[count][2] = xyzTo1d(2, i, 2);
+			winningLine[count][3] = xyzTo1d(3, i, 3);
 			count++;
 		}
 		//yz plane-4
@@ -599,75 +597,6 @@ public class aiTicTacToe {
 		return winMove;
 	}
 	
-	/**
-	 * Method: getStateOfPositionFromBoard
-	 * @author TF in CS 640 at Boston University
-	 * Function: 
-	 * 	A helper function to get state of a certain position 
-	 * 	in the Tic-Tac-Toe board by given an instance of class positionTicTacToe.
-	 * */
-	private int getStateOfPositionFromBoard( positionTicTacToe position, List<positionTicTacToe> board ) {
-		int index = position.x*16 + position.y*4 + position.z;
-		return board.get(index).state;
-	}
-	
-	/**
-	 * A Test.
-	 * */
-	public positionTicTacToe myAIAlgorithm2(List<positionTicTacToe> board, int player) {
-				
-		// Detect three sequences, which means that you have to block your opponent.
-		byte forceMove = getForceMove(player);
-		if( forceMove != -1 ) {
-			int[] xyz = oneDToxyz(forceMove);
-			return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
-		}
-					
-		// Detect wining lines, which means that you will win.			
-		byte winMove = getWinMove(player);
-		if( winMove != -1 ) {
-			int[] xyz = oneDToxyz(winMove);
-			return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
-		}
-		
-		Random rand = new Random();
-		do {			
-			// We can also randomly choose a strong point.
-			int x = rand.nextInt(4);
-			int y = rand.nextInt(4);
-			int z = rand.nextInt(4);
-			myNextMove = new positionTicTacToe(x,y,z);
-		} while( getStateOfPositionFromBoard(myNextMove, board) != 0 );
-		
-		return myNextMove;
-	
-	}
-	
-	public void printBoardTicTacToe(List<positionTicTacToe> targetBoard) {
-
-		for ( int i = 0; i < 4; i++ ) {
-			System.out.println("level(z) "+i);
-			for( int j = 0; j < 4; j++ ) {
-				System.out.print("["); // boundary
-				for( int k = 0; k < 4; k++ ) {
-					if ( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 1 ) {
-						System.out.print("X"); //print cross "X" for position marked by player 1
-					}
-					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 2 ) {
-						System.out.print("O"); //print cross "O" for position marked by player 2
-					}
-					else if( getStateOfPositionFromBoard(new positionTicTacToe(j,k,i), targetBoard) == 0 ) {
-						System.out.print("_"); //print "_" if the position is not marked
-					}
-					if( k == 3 ) {
-						System.out.print("]"); // boundary
-						System.out.println();
-					}					
-				}
-			}
-			System.out.println();
-		}
-	}
 	
 	private void printByteBoard() {
 		for ( int i = 0; i < 4; i++ ) {

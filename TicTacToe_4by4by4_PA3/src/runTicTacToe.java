@@ -44,6 +44,7 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
+		// ai2 = new aiTicTacToe(2);
 		ai2 = new aiTicTacToeEric(2, 4, 2, false);
 	}
 	
@@ -343,7 +344,7 @@ public class runTicTacToe {
 		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
 		int turn = 1;
 		firstPlayer = turn;
-		//game loop
+		// game loop
 		while( ( result = isEnded() ) == 0 ) {
 			if( turn == 1 ) {
 				long time1 = System.currentTimeMillis();
@@ -371,7 +372,6 @@ public class runTicTacToe {
 				
 				///////////
 				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);  // 2 stands for player 2
-				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
 				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");

@@ -838,8 +838,10 @@ public class aiTicTacToeCayden {
 	 * @param current player
 	 * @return a tic tac toe position
 	 * */
-	private byte getWinMoveFromByte(byte player) {
-		byte winMove = (Byte) null;
+	private byte getWinMoveFromByte(int player) {
+		byte winMove = -1;
+		player = (byte)player;
+		
 		for(int i = 0;i < winningLine.length;i++) {
 			byte p0 = winningLine[i][0];
 			byte p1 = winningLine[i][1];

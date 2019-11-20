@@ -676,8 +676,13 @@ public class aiTicTacToe {
 	 * Method: makeAByteBoard
 	 * @author Kaijia You
 	 * */
-	
-	
+	private byte[] ByteBoard(List<positionTicTacToe> board) {
+		for(int i = 0;i < board.size();i++) {
+			curBoard[i] = (byte)board.get(i).state;
+		}
+		
+		return curBoard;
+	}
 	
 	
 	

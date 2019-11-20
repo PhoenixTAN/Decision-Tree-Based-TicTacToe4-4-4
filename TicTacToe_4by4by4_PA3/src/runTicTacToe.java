@@ -20,7 +20,7 @@ public class runTicTacToe {
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
 	// private aiTicTacToe ai2;
-	private aiTicTacToeJerry ai2;
+	private aiTicTacToeEric ai2;
 	
 	public int result;
 	
@@ -44,7 +44,7 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		ai2 = new aiTicTacToeJerry(2);
+		ai2 = new aiTicTacToeEric(2, 4, 2, false);
 	}
 	
 	/**
@@ -340,7 +340,8 @@ public class runTicTacToe {
 	public void run() {
 
 		Random rand = new Random();
-		int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
+		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
+		int turn = 2;
 		firstPlayer = turn;
 		//game loop
 		while( ( result = isEnded() ) == 0 ) {
@@ -351,7 +352,7 @@ public class runTicTacToe {
 				System.out.println("Player 1 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player1NextMove,1,board))
 					turn = 2;
-				this.printBoardTicTacToe(board);
+				// this.printBoardTicTacToe(board);
 			}
 			else if( turn == 2 ) {
 				long time1 = System.currentTimeMillis();
@@ -369,6 +370,7 @@ public class runTicTacToe {
 				
 				///////////
 				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);  // 2 stands for player 2
+				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
 				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
@@ -416,7 +418,7 @@ public class runTicTacToe {
 		long time2 = System.currentTimeMillis();
 		System.out.println("Program run time: " + (time2 - time1) + " ms");*/
 		
-		int rounds = 20;
+		int rounds = 1;
 		
 		while( rounds > 0 ) {
 			runTicTacToe rttt = new runTicTacToe();

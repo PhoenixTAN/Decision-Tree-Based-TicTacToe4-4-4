@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class: aiTicTacToe
@@ -29,8 +28,10 @@ public class aiTicTacToe {
 	private static positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
 	private static int[] playerSequenceNum = new int[4];
 	private static int[] opponentSequenceNum = new int[4];
+	
+	private static byte[] curBoard = new byte[64];
+	
 	private static List<positionTicTacToe> avaliablePositions;
-	private static List<Integer> nextMoveEvaluation;
 	
 	/**
 	 * Private static final variables
@@ -52,8 +53,8 @@ public class aiTicTacToe {
 			
 			new positionTicTacToe(2, 2, 1),
 			new positionTicTacToe(1, 1, 2)		
-	};	
-			
+	};
+
 	/**
 	 * Constructor
 	 * @author TF in CS 640 at Boston University
@@ -116,17 +117,7 @@ public class aiTicTacToe {
 		try {
 			System.out.println("Player" + player + "' turn:");
 			currentBoard = deepCopyATicTacToeBoard(board);
-			
-			// The default is an AI randomly choose any available move.
-			Random rand = new Random();
-			do {			
-				// We can also randomly choose a strong point.
-				int x = rand.nextInt(4);
-				int y = rand.nextInt(4);
-				int z = rand.nextInt(4);
-				myNextMove = new positionTicTacToe(x,y,z);
-			} while( getStateOfPositionFromBoard(myNextMove, board) != 0 );
-		
+					
 			// Detect three sequences, which means that you have to block your opponent.
 			positionTicTacToe forceMove = getForceMove(player);
 			if( forceMove != null ) {
@@ -159,7 +150,8 @@ public class aiTicTacToe {
 			for( int i = 0; i < avaliablePositions.size(); i++ ) {
 				
 				positionTicTacToe po = avaliablePositions.get(i);
-
+				
+				// TODO: backtracking
 				List<positionTicTacToe> newBoard = deepCopyATicTacToeBoard(currentBoard);
 				this.makeMove(po, player, newBoard);
 				
@@ -193,14 +185,16 @@ public class aiTicTacToe {
 			return evaluator(board, player);
 		}
 		if( maximizingPlayer ) {
-			int value = Integer.MIN_VALUE;
 			
+			int value = Integer.MIN_VALUE;
 			// generate children list
 			getAvaliablePositions(board);
+			// TODO: backtracking
 			List<List<positionTicTacToe>> children = generateChildren(board, player);
 			// for each child do a miniMax recursion
 			for( int i = 0; i < children.size(); i++ ) {
 				List<positionTicTacToe> child = children.get(i);
+				// TODO: force move pruning
 				value = Math.max(value, miniMax(depth - 1, child, player, false, alpha, beta));		
 				alpha = Math.max(alpha, value);
 				if( alpha >= beta ) {
@@ -651,6 +645,12 @@ public class aiTicTacToe {
 		return copiedBoard;
 	}
 	
+	/**
+	 * Method: makeMove
+	 * Function: make a move on a board.
+	 * @author Ziqi Tan
+	 * @return 
+	 * */
 	private boolean makeMove(positionTicTacToe position, int player, List<positionTicTacToe> targetBoard) {
 		// make move on Tic-Tac-Toe board, given position and player 
 		// player 1 = 1, player 2 = 2
@@ -671,5 +671,14 @@ public class aiTicTacToe {
 		}
 		return false;
 	}
+	
+	/**
+	 * Method: makeAByteBoard
+	 * @author Kaijia You
+	 * */
+	
+	
+	
+	
 	
 }

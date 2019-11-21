@@ -1,4 +1,3 @@
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 public class aiTicTacToeEric {
@@ -8,8 +7,10 @@ public class aiTicTacToeEric {
 	private static List<List<positionTicTacToe>> winningLines;
 	private HashMap<String, Integer> table;
 	public static int [][] winningLinesArray;
+	private static int [] searchOrder;
+	private int [][] rewardMat;
 	private int returnChoice;
-	private int pnsDepth;
+	private int pnsTimeLimit;
 	private int maxDepth;
 	private int startDepth;
 	private PnS pns;
@@ -20,12 +21,8 @@ public class aiTicTacToeEric {
 	private double timeLimit = 10000;
 	private int cntNodes;
 	private int tableDepth = 3;
-	private int getStateOfPositionFromBoard(positionTicTacToe position, List<positionTicTacToe> board)
-	{
-		//a helper function to get state of a certain position in the Tic-Tac-Toe board by given position TicTacToe
-		int index = position.x*16+position.y*4+position.z;
-		return board.get(index).state;
-	}
+	private int [][] countEmpty = new int [3][3];
+	private int [] countLine = new int [3];
 	private positionTicTacToe fromIntToPosition(int x)
 	{
 		int i = x/16;
@@ -33,9 +30,10 @@ public class aiTicTacToeEric {
 		int k = x % 4;
 		return new positionTicTacToe(i, j, k);
 	}
-	private int heuristic(byte [] state, int turn){
-		int [][] countEmpty = new int [3][3];
-		int [] countLine = new int [3];
+	private int heuristic(byte [] state){
+		for(int i=0;i<3;i++)
+			for(int j=0;j<3;j++)
+				countEmpty[i][j]=0;
 		for(int i=0; i<76;i++){
 			countLine[0]=0;
 			countLine[1]=0;
@@ -48,12 +46,12 @@ public class aiTicTacToeEric {
 				countEmpty[1][countLine[1]-1]++;
 		}
 		int score = 0;
-		score += 100*countEmpty[1][2];
-		score += 10*countEmpty[1][1];
-		score += 1*countEmpty[1][0];
-		score += -100*countEmpty[2][2];
-		score += -10*countEmpty[2][1];
-		score += -1*countEmpty[2][0];
+		for(int i=1;i<=2;i++)
+			for(int j=0;j<3;j++)
+				if(i==1)
+					score += rewardMat[i-1][j] * countEmpty[i][j];
+				else
+					score -= rewardMat[i-1][j] * countEmpty[i][j];
 		return score;
 	}
 	private int isTerminal(byte [] state){
@@ -89,15 +87,15 @@ public class aiTicTacToeEric {
 	private int checkEasy(byte [] state){
 		int instruction;
 		// 1. Check if we can win directly
-		instruction = checkToWin(state, mplayer);
-		if(instruction != -1) {
-			return instruction;
-		}
-
-		// 2. Check if our opponent will win if we do not defend.
-		instruction = checkToWin(state, 3-mplayer);
-		if(instruction != -1)
-			return instruction;
+//		instruction = checkToWin(state, mplayer);
+//		if(instruction != -1) {
+//			return instruction;
+//		}
+//
+//		// 2. Check if our opponent will win if we do not defend.
+//		instruction = checkToWin(state, 3-mplayer);
+//		if(instruction != -1)
+//			return instruction;
 
 		// 3. If we are first, use the strategy table.
 		if(useQd) {
@@ -108,7 +106,7 @@ public class aiTicTacToeEric {
 		}
 
 		// 4. Proof-number search Allis, L.V. 1991
-		pns = new PnS(pnsDepth, winningLinesArray);
+		pns = new PnS(pnsTimeLimit, winningLinesArray);
 		Node Root = new Node(state);
 		Root.type = (byte) mplayer;
 		pns.search(Root);
@@ -163,47 +161,58 @@ public class aiTicTacToeEric {
 			}
 		}
 		if(depth == 0) {
-			score = heuristic(state, player);
+			score = heuristic(state);
 			if(startDepth - depth <= tableDepth) table.put(pns.byte2string(state), score);
 			return score;
 		}
 
-		// 3. Check whether the move is forced
-		// 3.1 Check if we can win directly
+		// 2. Check whether the move is forced
+		// 2.1 Check if we can win directly
 		instruction = checkToWin(state, player);
 		if(instruction != -1) {
 			state[instruction] = (byte) player;
 			score = alphaBetaSearch(state, depth-1, 3-player, false, alpha, beta);
 			state[instruction] = 0;
-			returnChoice = instruction;
+			if(needInstruction) {
+				returnChoice = instruction;
+				//System.out.println(returnChoice);
+			}
 			if(startDepth - depth <= tableDepth) table.put(pns.byte2string(state), score);
 			return score;
 		}
 
-		// 3.2. Check if our opponent will win if we do not defend
+		// 2.2. Check if our opponent will win if we do not defend
 		instruction = checkToWin(state, 3-player);
 		if(instruction != -1) {
 			state[instruction] = (byte) player;
 			score = alphaBetaSearch(state, depth-1, 3-player, false, alpha, beta);
 			// do not decrease depth because we are forced
 			state[instruction] = 0;
-			returnChoice = instruction;
+			if(needInstruction){
+				returnChoice = instruction;
+				//System.out.println(returnChoice);
+			}
 			if(startDepth - depth <= tableDepth) table.put(pns.byte2string(state), score);
 			return score;
 		}
 
-		//4. minimax
+		//3. minimax
+		int si= 0 ;
 		if(player == 1){ // max node
 			score = -2*Node.inf;
 			for(int i=0;i<64;i++){
-				if(state[i] != 0)
+				si = searchOrder[i];
+				if(state[si] != 0)
 					continue;
-				state[i] = (byte) player;
+				state[si] = (byte) player;
 				int tscore = alphaBetaSearch(state, depth-1, 3-player, false, alpha, beta);
-				state[i] = 0;
+				state[si] = 0;
 				if(tscore > score){
 					score = tscore;
-					returnChoice = i;
+					if(needInstruction == true) {
+						returnChoice = si;
+						//System.out.println(returnChoice);
+					}
 				}
 				if(score > alpha)
 					alpha = score;
@@ -217,14 +226,18 @@ public class aiTicTacToeEric {
 		}else{ // min node
 			score = 2*Node.inf;
 			for(int i=0;i<64;i++) {
-				if (state[i] != 0)
+				si = searchOrder[i];
+				if (state[si] != 0)
 					continue;
-				state[i] = (byte) player;
+				state[si] = (byte) player;
 				int tscore = alphaBetaSearch(state, depth-1, 3-player, false, alpha, beta);
-				state[i] = 0;
+				state[si] = 0;
 				if (tscore < score) {
 					score = tscore;
-					returnChoice = i;
+					if(needInstruction == true) {
+						//System.out.println(si);
+						returnChoice = si;
+					}
 				}
 				if(score < beta)
 					beta = score;
@@ -251,28 +264,39 @@ public class aiTicTacToeEric {
 		// 2. Check whether it is easy
 		instruction = checkEasy(state);
 		if(instruction != -1){
+			System.out.printf("Dict choice: %d\n",instruction);
 			return fromIntToPosition(instruction);
 		}
-
+		double pnsTime = System.currentTimeMillis() - startTime;
 		// 3. Alpha-beta search
-		int i, score=0, finalChoice = -1;
+		int i, score=0, finalChoice = -1, lastNodes=0;
 		endTime=0;
-		for(i=0;i<64;i++) {
+		double lastTime = 0;
+		for(i=0;i<64;i+=1) {
 			aborted = false;
 			cntNodes=0;
 			table = new HashMap<>();
 			startDepth = maxDepth+i;
+			long miniStartTime = System.currentTimeMillis();
 			int tscore = alphaBetaSearch(state, startDepth, player, true, -Node.inf, Node.inf);
+			long miniEndTime = System.currentTimeMillis();
+			double miniTotalTime = miniEndTime - miniStartTime;
 			endTime = System.currentTimeMillis();
 			if(aborted || endTime + 100 > startTime + timeLimit)
 				break;
+			//System.out.printf("rc:%d\n", returnChoice);
+			lastTime = miniTotalTime;
+			lastNodes = cntNodes;
 			score = tscore;
 			finalChoice = returnChoice;
 			if(tscore == Node.inf || tscore == -Node.inf)
 				break;
 		}
 		double TotalTime = endTime - startTime;
-		System.out.printf("Player: %d, final score: %d, choice: %d, cntNodes: %d, sd: %d, time: %.4f\n", player, score, finalChoice, cntNodes, startDepth-1, TotalTime/1000.0);
+		if(aborted)
+			startDepth--;
+		System.out.printf("Player: %d, final score: %d, choice: %d, cntNodes: %d, sd: %d, time: %.4f, ptime:%.4f, ltime:%.4f\n",
+				player, score, finalChoice, lastNodes, startDepth, TotalTime/1000.0, pnsTime/1000.0, lastTime/1000.0);
 		return fromIntToPosition(finalChoice);
 
 	}
@@ -432,14 +456,20 @@ public class aiTicTacToeEric {
 		return winningLines;
 
 	}
-	public aiTicTacToeEric(int setPlayer, int d, int pd, boolean uqd)
+	public aiTicTacToeEric(int setPlayer, int d, int ptl, boolean uqd, int r1, int r2, int r3)
 	{
 		mplayer = setPlayer;
 		qd = new qubicDictionary(setPlayer);
 		winningLines = initializeWinningLines();
 		useQd = uqd;
 		maxDepth = d;
-		pnsDepth = pd;
+		pnsTimeLimit = ptl;
+		rewardMat = new int [][] {{r1,r2,r3},{r1,r2,r3}};
+		searchOrder = new int [] {0,3,12,15,21,22,25,26,37,38,41,42,48,51,60,63,
+				1,2,4,5,6,7,8,9,10,11,13,14,
+		16,17,18,19,20,23,24,27,28,29,30,31,
+		32,33,34,35,36,39,40,43,44,45,46,47,
+		49,50,52,53,54,55,56,57,58,59,61,62};
 	}
 	public aiTicTacToeEric(int setPlayer){
 		mplayer = setPlayer;
@@ -447,22 +477,22 @@ public class aiTicTacToeEric {
 		winningLines = initializeWinningLines();
 		useQd = true;
 		maxDepth = 4;
-		pnsDepth = 100000;
-	}
-	public static void main(String[] args) {
-
-		//run game loop
-		//aiTicTacToe attt = new aiTicTacToe(1, 4);
-		// System.out.println(attt.qd.dict[1][0]);
+		pnsTimeLimit = (int) (timeLimit /2);
+		rewardMat = new int [][] {{3,10,30},{3,10,30}};
+		searchOrder = new int [] {0,3,12,15,21,22,25,26,37,38,41,42,48,51,60,63,
+				1,2,4,5,6,7,8,9,10,11,13,14,
+				16,17,18,19,20,23,24,27,28,29,30,31,
+				32,33,34,35,36,39,40,43,44,45,46,47,
+				49,50,52,53,54,55,56,57,58,59,61,62};
 	}
 }
 class PnS{
-	private int searchLimit;
+	private int timeLimit;
 	private int [][] winningLinesArray;
 	public static HashMap<String, Byte> pntt;
 	public PnS(int limit, int [][] wla)
 	{
-		searchLimit = limit;
+		timeLimit = limit;
 		winningLinesArray = wla;
 		if(pntt==null)
 			pntt = new HashMap<String, Byte>();
@@ -478,41 +508,22 @@ class PnS{
 		setProofAndDisproofNumbers(Root);
 		Node current = Root;
 		Node mostProving;
-		while(Root.proof != 0 && Root.disproof != 0 && searchLimit != 0)
+		long beginTime = System.currentTimeMillis();
+		long endTime;
+		int count = 0;
+		while(Root.proof != 0 && Root.disproof != 0)
 		{
-			//System.out.println(searchLimit);
-			searchLimit--;
+			if(count % 1000 == 0){
+				endTime = System.currentTimeMillis();
+				if(endTime - beginTime > timeLimit)
+					break;
+			}
+			count++;
 			mostProving = selectMostProvingNode(current);
-			//System.out.print('*');
 			expandNode(mostProving);
-			//System.out.print('*');
 			current = updateAncestors(mostProving, Root);
-			//System.out.print('*');
 		}
-//		return -Root.proof;
-//		if(Root.proof == 0)
-//			System.out.println("Win");
-//		int pn = Node.inf*10, step=-1;
-//		if(Root.type == 1){ // OR
-//			for(Node child: Root.Children){
-//				if(child.proof<pn){
-//					pn = child.proof;
-//					step = child.lastStep;
-//				}
-//			}
-//		}else{  // AND
-//			pn = Node.inf * 10;
-//			for(Node child: Root.Children){
-//				if(child.disproof<pn){
-//					pn = child.disproof;
-//					step = child.lastStep;
-//				}
-//			}
-//		}
-//		if(step == -1)
-//			System.out.println("Step -1 Error");
-//		return step;
-
+		System.out.printf("pc: %d, ps: %d, ", count, pntt.size());
 	}
 
 	private void evaluate(Node n){
@@ -835,7 +846,7 @@ class qubicDictionary {
 		for(int i=0;i<192;i++) {
 			s = arrayToString(similar[i]);
 			if (dict.containsKey(s)) {
-				System.out.printf("Player: %d, Find i : %d, %s\n", player, i, s);
+				System.out.printf("Player: %d, Find i : %d, %s ", player, i, s);
 				order = s;
 				return automorphisms[i][Integer.valueOf(dict.get(s))];
 			}
@@ -847,7 +858,7 @@ class qubicDictionary {
 	public qubicDictionary(int p)
 	{
 		player = p;
-		System.out.printf("Set player: %d\n", p);
+		//System.out.printf("Set player: %d\n", p);
 		automorphismInitializer();
 		dict = new HashMap<String, String>();
 		for(int i=0;i<dict_array.length;i++)

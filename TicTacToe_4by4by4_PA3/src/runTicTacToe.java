@@ -19,8 +19,8 @@ public class runTicTacToe {
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
-	// private aiTicTacToe ai2;
-	private aiTicTacToeEric ai2;
+	private aiTicTacToeV1 ai2;
+	// private aiTicTacToeEric ai2;
 	
 	public int result;
 	
@@ -44,8 +44,8 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		// ai2 = new aiTicTacToe(2);
-		ai2 = new aiTicTacToeEric(2, 4, 2, false);
+		ai2 = new aiTicTacToeV1(2);
+		// ai2 = new aiTicTacToeEric(2, 4, 5000, false, 2,13,50);
 	}
 	
 	/**
@@ -372,11 +372,12 @@ public class runTicTacToe {
 				
 				///////////
 				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);  // 2 stands for player 2
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))
 					turn = 1;
+				this.printBoardTicTacToe(board);
 				System.out.println();
 			}
 			else  {

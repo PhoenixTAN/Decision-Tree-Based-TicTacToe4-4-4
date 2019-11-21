@@ -342,7 +342,7 @@ public class runTicTacToe {
 
 		Random rand = new Random();
 		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
-		int turn = 1;
+		int turn = 2;
 		firstPlayer = turn;
 		// game loop
 		while( ( result = isEnded() ) == 0 ) {
@@ -372,7 +372,7 @@ public class runTicTacToe {
 				
 				///////////
 				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);  // 2 stands for player 2
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))

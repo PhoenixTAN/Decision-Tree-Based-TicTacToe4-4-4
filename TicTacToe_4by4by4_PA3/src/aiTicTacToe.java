@@ -123,9 +123,8 @@ public class aiTicTacToe {
 				System.out.println("Force move.");
 				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
-						
 			
-							
+			// First two steps should occupy the strongest point.
 			int coreMove = this.getFirstTwoStep(player);
 			if( coreMove != -1 ) {
 				int[] xyz = oneDToxyz((byte)coreMove);

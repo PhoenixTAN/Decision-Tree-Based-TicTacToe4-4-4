@@ -20,25 +20,24 @@ public class aiTicTacToe {
 	public int player;  // 1 for player 1 and 2 for player 2
 	
 	/**
-	 * Private static variables
+	 * Private variables
 	 * @author Ziqi Tan
 	 * */
-	private static byte[][] winningLine = new byte[76][4];
-	
+	private static byte[][] winningLine = new byte[76][4];	
 	private positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
 	private int[] playerSequenceNum = new int[4];
-	private int[] opponentSequenceNum = new int[4];
-	
+	private int[] opponentSequenceNum = new int[4];	
 	private byte[] curBoard = new byte[64];
-	
-	private static int miniMaxDepth = 4;
-		
+				
 	/**
 	 * Private static final variables
 	 * @author Ziqi Tan
 	 * */
 	private static final int[] playerSequenceValue = new int[] {1, 15, 130, 100000};
 	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
+	private static final int timeOutAlert = 9000;   // ms return next move in 9 second
+	private static final int timeEnough = 7000;     // ms
+	private static final int miniMaxDepth = 4;
 	
 	private static final int[] corePoints = {
 		21, 22, 25, 26, 37, 38, 41, 42
@@ -131,44 +130,20 @@ public class aiTicTacToe {
 				System.out.println("Core move");
 				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
-			
+						
+			int depth = miniMaxDepth;
 			int maxValue = Integer.MIN_VALUE;
-			// for( int i = 0; i < curBoard.length; i++ ) {
-			for( int j = 0; j < traverseOrder.length; j++ ) {
-				int i = j;
-				if( curBoard[i] == 0 ) {					
-					// make move					
-					curBoard[i] = (byte)player;					
-					int newValue = miniMax(miniMaxDepth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);										
-					if( newValue > maxValue ) {
-						// update max value
-						maxValue = newValue;						
-						// update my next best move
-						int[] xyz = oneDToxyz((byte) i);
-						myNextMove = new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
-					}
-					// cancel move
-					curBoard[i] = 0;  // backtracking
-
-				}
-				long time2 = System.currentTimeMillis();	
-				if( time2 - time1 > 9000 ) {
-					System.out.println("Time out alert!");
-					System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
-					return myNextMove;
-				}
-			}
-			
-			long time2 = System.currentTimeMillis();
-			if( time2 - time1 < 6000 ) {
-				miniMaxDepth++;
-				System.out.println("Progressive deepening");
+			// Progressive deepening
+			do {		
+				System.out.println("Progressive deepening: depth=" + depth);
+				
+				// traverse every next move
 				for( int j = 0; j < traverseOrder.length; j++ ) {
 					int i = j;
 					if( curBoard[i] == 0 ) {					
 						// make move					
 						curBoard[i] = (byte)player;					
-						int newValue = miniMax(miniMaxDepth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);										
+						int newValue = miniMax(depth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);										
 						if( newValue > maxValue ) {
 							// update max value
 							maxValue = newValue;						
@@ -180,15 +155,20 @@ public class aiTicTacToe {
 						curBoard[i] = 0;  // backtracking
 
 					}
-					time2 = System.currentTimeMillis();	
-					if( time2 - time1 > 9000 ) {
+					long time2 = System.currentTimeMillis();	
+					if( time2 - time1 > timeOutAlert ) {
 						System.out.println("Time out alert!");
 						System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
 						return myNextMove;
 					}
 				}
-				
-			}
+				depth++;
+				if( depth >= (64 - isDraw()) ) {
+					System.out.println("Depth overflow. MyNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
+					return myNextMove;
+				}
+			} while( System.currentTimeMillis() - time1 < timeEnough );   // if you have enough time
+			
 			System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
 		
 		}
@@ -208,31 +188,31 @@ public class aiTicTacToe {
 		if( depth == 0 || isWin() ) {
 			return evaluation(player);
 		}
-		if( maximizingPlayer ) {
-			
+		if( isDraw() == 64 ) {
+			return 0;
+		}
+		
+		if( maximizingPlayer ) {	
+			/* Maximizer player*/
 			int value = Integer.MIN_VALUE;
 			// for each child do a miniMax recursion
-			// for( int i = 0; i < curBoard.length; i++ ) {	
 			for( int j = 0; j < traverseOrder.length; j++ ) {
 				int i = j;
-				if( curBoard[i] == 0 ) {
-					
+				if( curBoard[i] == 0 ) {					
 					// winMove pruning
 					byte winMove = getWinMove(player);
 					if( winMove != -1 ) {
 						value = Integer.MAX_VALUE;
 						alpha = Integer.MAX_VALUE;
 						break;
-					}
-					
+					}					
 					// force move pruning
 					byte forceMove = getForceMove(player);
 					if( forceMove != -1 ) {
 						curBoard[forceMove] = (byte)player;
 						// DFS and deepening 
 						value = Math.max(value, miniMax(depth, player, false, alpha, beta));
-						curBoard[forceMove] = 0;  // backtracking
-						
+						curBoard[forceMove] = 0;  // backtracking						
 						alpha = Math.max(alpha, value);
 						if( alpha >= beta ) {
 							break;  
@@ -241,31 +221,27 @@ public class aiTicTacToe {
 					}
 					else {
 						// naive miniMax part
-						curBoard[i] = (byte)player;
-						
+						curBoard[i] = (byte)player;						
 						// DFS
 						value = Math.max(value, miniMax(depth - 1, player, false, alpha, beta));
-						curBoard[i] = 0;  // backtracking
-						
+						curBoard[i] = 0;  // backtracking						
 						// beta pruning
 						alpha = Math.max(alpha, value);
 						if( alpha >= beta ) {
 							break;  
 						}
-					}
-									
+					}									
 				}
 			}
 			// return the maximum value			
 			return value;
 		}
 		else {
-			// minimizing player
+			/* minimizing player */
 			int value = Integer.MAX_VALUE;
 			int opponent = (player == 1 ? 2 : 1);
 			
 			// for each child do a miniMax recursion
-			// for( int i = 0; i < curBoard.length; i++ ) {
 			for( int j = 0; j < traverseOrder.length; j++ ) {
 				int i = j;
 				if( curBoard[i] == 0 ) {
@@ -283,7 +259,7 @@ public class aiTicTacToe {
 					if( forceMove != -1 ) {
 						curBoard[forceMove] = (byte)opponent;
 						value = Math.min(value, miniMax(depth, player, true, alpha, beta));
-						curBoard[forceMove] = 0;
+						curBoard[forceMove] = 0;  // backtracking
 						// alpha pruning
 						beta = Math.min(beta, value);
 						if( alpha >= beta ) {
@@ -383,6 +359,7 @@ public class aiTicTacToe {
 			/*if( playerCounter > 0 && opponentCounter > 0 ) {
 				continue;
 			}*/
+			
 			if( playerCounter > 0 ) {
 				playerSequenceNum[playerCounter-1]++;
 			}
@@ -425,6 +402,22 @@ public class aiTicTacToe {
 		}
 		return false;
 	}
+	
+	/**
+	 * Method: isDraw
+	 * @author Ziqi Tan
+	 * @ return the number of moves that have made
+	 * */
+	private int isDraw() {
+		
+		int steps = 0;
+		for( int i = 0; i < curBoard.length; i++ ) {
+			if( curBoard[i] != 0 ) {
+				steps++;
+			}
+		}		
+		return steps;		
+	}
 						
 	/**
 	 * Method: getByteBoard
@@ -442,7 +435,6 @@ public class aiTicTacToe {
 	 * @author Kaijia You
 	 * Function: Transform 3 dimension coordination to 1 dimension.
 	 * @param int x, y, z
-	 * 
 	 * @return byte index
 	 * */
 	private byte xyzTo1d(int i, int j, int k) {
@@ -461,8 +453,10 @@ public class aiTicTacToe {
 		
 		int x = i/16;
 		i -= x*16;
+		
 		int y = i/4;
 		i -= y*4;
+		
 		int z = i/1;
 		
 		return new int[]{x, y, z};
@@ -692,7 +686,7 @@ public class aiTicTacToe {
 	 * @author Ziqi Tan
 	 * */
 	private int getFirstTwoStep(int player) {
-		// if steps < 4
+
 		int move = -1;
 		// occupy the strongest points
 		// then hard code

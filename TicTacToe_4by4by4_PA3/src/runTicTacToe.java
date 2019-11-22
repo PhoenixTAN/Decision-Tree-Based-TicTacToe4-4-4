@@ -19,7 +19,7 @@ public class runTicTacToe {
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
-	private aiTicTacToeV1 ai2;
+	private aiTicTacToe ai2;
 	// private aiTicTacToeEric ai2;
 	
 	public int result;
@@ -44,7 +44,7 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		ai2 = new aiTicTacToeV1(2);
+		ai2 = new aiTicTacToe(2);
 		// ai2 = new aiTicTacToeEric(2, 4, 5000, false, 2,13,50);
 	}
 	
@@ -342,7 +342,7 @@ public class runTicTacToe {
 
 		Random rand = new Random();
 		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
-		int turn = 2;
+		int turn = 1;
 		firstPlayer = turn;
 		// game loop
 		while( ( result = isEnded() ) == 0 ) {
@@ -421,7 +421,7 @@ public class runTicTacToe {
 		long time2 = System.currentTimeMillis();
 		System.out.println("Program run time: " + (time2 - time1) + " ms");*/
 		
-		int rounds = 1;
+		int rounds = 20;
 		
 		while( rounds > 0 ) {
 			runTicTacToe rttt = new runTicTacToe();

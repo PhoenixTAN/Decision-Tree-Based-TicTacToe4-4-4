@@ -1,0 +1,47 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+
+\begin{document}
+
+\begin{algorithm}
+\caption{myAIAlgorithm}
+\begin{algorithmic}[]
+
+\State \textbf{Input} List$<$positionTicTacToe$>$ $board$, int $player$
+
+\State \textbf{Return} positionTicTacToe $myNextMove$
+\State
+\Procedure{myAIAlgorithm}{$board,player$}     
+\State
+\State initialization
+\State
+\State $ winMove \gets getWinMove(player)$  \Comment{If we have a win move}
+\If {$winMove $ exists}
+    \State  \textbf{return} $winMove$
+\EndIf
+\State
+\State $ forceMove \gets getForceMove(player)$  \Comment{If we have a force move}
+\If {$forceMove $ exists}
+    \State  \textbf{return} $forceMove$
+\EndIf
+\State
+\State $ coreMove \gets getFirstTwoSteps(player)$  \Comment{Occupy the strongest points}
+\If {$coreMove$ exists}
+    \State  \textbf{return} $coreMove$
+\EndIf
+\State
+
+\State \comment{Progressive deepening}
+
+% \comment{Traverse every possible positions}
+
+% \comment{miniMax with alpha-beta prunning}
+
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}

@@ -36,7 +36,7 @@ public class aiTicTacToe {
 	private static final int[] playerSequenceValue = new int[] {1, 15, 130, 100000};
 	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
 	private static final int timeOutAlert = 9000;   // ms return next move in 9 second
-	private static final int timeEnough = 7000;     // ms
+	private static final int timeEnough = 5500;     // ms
 	private static final int miniMaxDepth = 4;
 	
 	private static final int[] corePoints = {
@@ -135,7 +135,7 @@ public class aiTicTacToe {
 			int maxValue = Integer.MIN_VALUE;
 			// Progressive deepening
 			do {		
-				System.out.println("Progressive deepening: depth=" + depth);
+				System.out.println("Progressive deepening: depth = " + depth);
 				
 				// traverse every next move
 				for( int j = 0; j < traverseOrder.length; j++ ) {

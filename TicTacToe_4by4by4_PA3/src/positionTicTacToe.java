@@ -9,8 +9,7 @@ public class positionTicTacToe {
 	
 	int x;
 	int y;
-	int z;
-	
+	int z;	
 	int state;  
 	// mark by player 1 or player 2 or null ('X', 'O', '_')
 	// { 0 : unmarked, -1 : No meaning, 1 : 'X', 2: 'O' }

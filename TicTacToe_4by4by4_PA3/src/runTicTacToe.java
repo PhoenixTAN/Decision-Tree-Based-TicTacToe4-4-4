@@ -19,8 +19,8 @@ public class runTicTacToe {
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
-	private aiTicTacToeEric ai2;
-	// private aiTicTacToeV1 ai2;
+	// private aiTicTacToeEric ai2;
+	private aiTicTacToe ai2;
 	
 	public int result;
 	
@@ -45,8 +45,8 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		// ai2 = new aiTicTacToeV1(2);
-		ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
+		ai2 = new aiTicTacToe(2);
+		// ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
 	}
 	
 	/**

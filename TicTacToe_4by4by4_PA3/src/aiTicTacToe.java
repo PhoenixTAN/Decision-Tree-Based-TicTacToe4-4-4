@@ -38,7 +38,7 @@ public class aiTicTacToe {
 	private static final int[] playerSequenceValue = new int[] {1, 15, 130, 100000};
 	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
 
-	private static final int timeOutAlert = 9700;   // ms return next move in 9 second
+	private static final int timeOutAlert = 9800;   // ms return next move in 9 second
 	private static final int timeEnough = 8000;     // ms
 	private static final int miniMaxDepth = 4;
 	
@@ -115,6 +115,7 @@ public class aiTicTacToe {
 			if( winMove != -1 ) {
 				int[] xyz = oneDToxyz(winMove);
 				System.out.println("Win move");
+				System.out.println("myNextMove: " + xyz[0] + " " + xyz[1] + " " + xyz[2]);
 				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
 			
@@ -123,6 +124,7 @@ public class aiTicTacToe {
 			if( forceMove != -1 ) {
 				int[] xyz = oneDToxyz(forceMove);
 				System.out.println("Force move.");
+				System.out.println("myNextMove: " + xyz[0] + " " + xyz[1] + " " + xyz[2]);
 				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
 			
@@ -131,6 +133,7 @@ public class aiTicTacToe {
 			if( coreMove != -1 ) {
 				int[] xyz = oneDToxyz((byte)coreMove);
 				System.out.println("Core move");
+				System.out.println("myNextMove: " + xyz[0] + " " + xyz[1] + " " + xyz[2]);
 				return new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
 			}
 						
@@ -220,7 +223,6 @@ public class aiTicTacToe {
 					if( winMove != -1 ) {
 						curBoard[winMove] = (byte) player;
 						value = evaluation(player);
-						alpha = value;
 						curBoard[winMove] = 0;
 						break;
 					}					
@@ -231,10 +233,6 @@ public class aiTicTacToe {
 						// DFS and deepening 
 						value = Math.max(value, miniMax(depth, player, false, alpha, beta));
 						curBoard[forceMove] = 0;  // backtracking						
-						alpha = Math.max(alpha, value);
-						if( alpha >= beta ) {
-							break;  
-						}
 						break;
 					}
 					else {
@@ -267,8 +265,7 @@ public class aiTicTacToe {
 					byte winMove = getWinMove(opponent);
 					if( winMove != -1 ) {
 						curBoard[winMove] = (byte) opponent;
-						value = evaluation(opponent);
-						beta = value;
+						value = evaluation(player);
 						curBoard[winMove] = 0;
 						break;
 					}
@@ -279,11 +276,6 @@ public class aiTicTacToe {
 						curBoard[forceMove] = (byte)opponent;
 						value = Math.min(value, miniMax(depth, player, true, alpha, beta));
 						curBoard[forceMove] = 0;  // backtracking
-						// alpha pruning
-						beta = Math.min(beta, value);
-						if( alpha >= beta ) {
-							break;  
-						}
 						break;
 					}
 					else {
@@ -299,8 +291,7 @@ public class aiTicTacToe {
 						if( alpha >= beta ) {
 							break;  
 						}
-					}
-										
+					}										
 				}
 			}
 			// return the minimum value			

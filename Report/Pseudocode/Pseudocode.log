@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.5.3)  23 NOV 2019 21:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018/W32TeX) (preloaded format=pdflatex 2019.5.3)  23 NOV 2019 22:03
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -99,26 +99,43 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 15.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 15.
- [1
 
-{d:/LaTex/LaTeXInstallation/texmf-var/fonts/map/pdftex/updmap/pdftex.map}] [2] 
-(./Pseudocode.aux) ) 
+Overfull \hbox (14.77368pt too wide) in paragraph at lines 86--87
+[] $\OML/cmm/m/it/10 value \OMS/cmsy/m/n/10   \OML/cmm/m/it/10 max\OT1/cmr/m/n/
+10 (\OML/cmm/m/it/10 value; miniMax\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 depth; pla
+yer; false; alpha; beta\OT1/cmr/m/n/10 ))$ 
+ []
+
+
+Overfull \hbox (8.21884pt too wide) in paragraph at lines 119--120
+[] $\OML/cmm/m/it/10 value \OMS/cmsy/m/n/10   \OML/cmm/m/it/10 min\OT1/cmr/m/n/
+10 (\OML/cmm/m/it/10 value; miniMax\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 depth; pla
+yer; true; alpha; beta\OT1/cmr/m/n/10 ))$ 
+ []
+
+
+LaTeX Warning: Float too large for page by 55.93329pt on input line 140.
+
+[1
+
+{d:/LaTex/LaTeXInstallation/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+[2] (./Pseudocode.aux) ) 
 Here is how much of TeX's memory you used:
- 1362 strings out of 492649
- 18487 string characters out of 6128182
- 92225 words of memory out of 5000000
- 5292 multiletter control sequences out of 15000+600000
+ 1369 strings out of 492649
+ 18587 string characters out of 6128182
+ 99225 words of memory out of 5000000
+ 5299 multiletter control sequences out of 15000+600000
  4417 words of font info for 17 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 23i,4n,23p,227b,292s stack positions out of 5000i,500n,10000p,200000b,80000s
-<d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmbx10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmcsc10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/pub
-lic/amsfonts/cm/cmmi10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/p
-ublic/amsfonts/cm/cmr10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmsy10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmtt10.pfb>
-Output written on Pseudocode.pdf (2 pages, 78303 bytes).
+ 23i,4n,23p,227b,296s stack positions out of 5000i,500n,10000p,200000b,80000s
+<d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmbx10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmcsc10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmmi10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmr10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb><d:/LaTex/LaTeXInstallation/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmtt10.pfb>
+Output written on Pseudocode.pdf (2 pages, 80470 bytes).
 PDF statistics:
  35 PDF objects out of 1000 (max. 8388607)
  24 compressed objects within 1 object stream

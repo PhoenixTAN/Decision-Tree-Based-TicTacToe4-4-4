@@ -36,16 +36,16 @@
 \EndIf
 \State
 
-\State $maxValue = -\infty$
+\State $maxValue \gets -\infty$
 \State $positionTicTacToe$ $myNextMove$
 \State
 \Do \Comment{Progressive deepening}
     \For{\texttt{<each available move $curMove$>}}
         \State \texttt{<make current move>}
-	  \State $newVale = miniMax(depth, player, false, -\infty, +\infty)$
+	  \State $newVale \gets miniMax(depth, player, false, -\infty, +\infty)$
 	  \If {$newValue > maxValue$}
-    	           \State  $maxValue = newValue$
-		     \State $myNextMove =curMove$
+    	           \State  $maxValue \gets newValue$
+		     \State $myNextMove \gets curMove$
          \EndIf
 	   \State \texttt{<cancel current move>}  \Comment{Backtracking}
       \EndFor
@@ -68,18 +68,70 @@
 	\State \textbf{return} $evaluation(player)$  \Comment{evaluate the board configutaion}
 \EndIf
 \If {$maximizingPlayer$}  \Comment{Maximizer}
+	\State $value \gets -\infty$
     	\For{\texttt{<each available move $curMove$>}}
-        \State \texttt{<make current move>}
-	  \State $newVale = miniMax(depth, player, false, -\infty, +\infty)$
-	  \If {$newValue > maxValue$}
-    	           \State  $maxValue = newValue$
-		     \State $myNextMove =curMove$
-         \EndIf
-	   \State \texttt{<cancel current move>}  \Comment{Backtracking}
-      \EndFor  
+        	
+		\State $ winMove \gets getWinMove(player)$  \Comment{win move pruning}
+		\If {$winMove $ exists}
+    			\State  \texttt{<make this win move>}
+   			\State   $value \gets evaluation(player)$
+     			\State \texttt{<cancel this win move>}  \Comment{Backtracking}
+			\State \textbf{break}
+		\EndIf
 
+		\State $ forceMove \gets getForceMove(player)$  \Comment{force move pruning}
+		\If {$forceMove $ exists}
+    			\State  \texttt{<make this force move>}
+			\Comment{DFS and deepening}
+   		 	\State   $value \gets max(value, miniMax(depth, player, false, alpha, beta))$
+     			\State \texttt{<cancel this force move>}  \Comment{Backtracking}
+		\Else
+			\Comment{Naive miniMax}
+			\State \texttt{<make current move>}
+			\Comment{DFS}
+			\State   $value \gets   $
+			\State $ max(value, miniMax(depth-1, player, false, alpha, beta))$
+			\State \texttt{<cancel current move>}  \Comment{Backtracking}
+			\State $alpha \gets max(alpha, value) $
+			\If{$alpha >= beta$ }
+				\State \textbf{break}
+			\EndIf
+		\EndIf	    
+      \EndFor  
+	\State \textbf{return} $value$
 \Else  \Comment{Minimizer}
-\State aaa
+	\State $value \gets +\infty$
+	\State $opponent \gets !player$
+    	\For{\texttt{<each available move $curMove$>}}
+        	
+		\State $ winMove \gets getWinMove(opponent)$  \Comment{win move pruning}
+		\If {$winMove $ exists}
+    			\State  \texttt{<make this win move>}
+   			\State   $value \gets evaluation(player)$
+     			\State \texttt{<cancel this win move>}  \Comment{Backtracking}
+			\State \textbf{break}
+		\EndIf
+
+		\State $ forceMove \gets getForceMove(opponent)$  \Comment{force move pruning}
+		\If {$forceMove $ exists}
+    			\State  \texttt{<make this force move>}
+			\Comment{DFS and deepening}
+   		 	\State   $value \gets min(value, miniMax(depth, player, true, alpha, beta))$
+     			\State \texttt{<cancel this force move>}  \Comment{Backtracking}
+		\Else
+			\Comment{Naive miniMax}
+			\State \texttt{<make current move>}
+			\Comment{DFS}
+			\State   $value \gets   $
+			\State $ min(value, miniMax(depth-1, player, true, alpha, beta))$
+			\State \texttt{<cancel current move>}  \Comment{Backtracking}
+			\State $beta \gets min(beta, value) $
+			\If{$alpha >= beta$ }
+				\State \textbf{break}
+			\EndIf
+		\EndIf	    
+      \EndFor  
+	\State \textbf{return} $value$
 \EndIf
 
 

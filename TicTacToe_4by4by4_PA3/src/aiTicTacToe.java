@@ -37,6 +37,7 @@ public class aiTicTacToe {
 	private static byte[][] winningLine = new byte[76][4];
 	private static final int[] playerSequenceValue = new int[] {1, 15, 130, 100000};
 	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
+
 	private static final int timeOutAlert = 9700;   // ms return next move in 9 second
 	private static final int timeEnough = 8000;     // ms
 	private static final int miniMaxDepth = 4;
@@ -198,12 +199,6 @@ public class aiTicTacToe {
 			return evaluation(player);
 		}
 		
-		// game end
-		int gameEnd = isEnd(player);
-		if( gameEnd != 0 ) {
-			return evaluation(player);
-		}
-		
 		// search finish
 		if( depth == 0 ) {
 			return evaluation(player);
@@ -215,7 +210,7 @@ public class aiTicTacToe {
 		}
 		
 		if( maximizingPlayer ) {	
-			/* Maximizer player*/
+			/* Maximizer player */
 			int value = Integer.MIN_VALUE;
 			// for each child do a miniMax recursion
 			for( int j = 0; j < traverseOrder.length; j++ ) {
@@ -224,9 +219,6 @@ public class aiTicTacToe {
 					// winMove pruning
 					byte winMove = getWinMove(player);
 					if( winMove != -1 ) {
-						
-						// value = Integer.MAX_VALUE;
-						// alpha = Integer.MAX_VALUE;
 						curBoard[winMove] = (byte) player;
 						value = evaluation(player);
 						alpha = value;
@@ -276,8 +268,6 @@ public class aiTicTacToe {
 					// winMove pruning
 					byte winMove = getWinMove(opponent);
 					if( winMove != -1 ) {
-						// value = Integer.MIN_VALUE;
-						// beta = Integer.MIN_VALUE;
 						curBoard[winMove] = (byte) opponent;
 						value = evaluation(opponent);
 						beta = value;
@@ -407,37 +397,7 @@ public class aiTicTacToe {
 		}	
 		return value;	
 	}
-	
-	/**
-	 * Method: isWin
-	 * @author Ziqi Tan
-	 * Function: check whether the game is end.
-	 * */	
-	private int isEnd(int player) {
-		int opponent = (player == 1 ? 2 : 1);
-		for(int i = 0; i < winningLine.length; i++) {
-			byte p0 = winningLine[i][0];
-			byte p1 = winningLine[i][1];
-			byte p2 = winningLine[i][2];
-			byte p3 = winningLine[i][3];
-						
-			byte state0 = curBoard[p0];
-			byte state1 = curBoard[p1];
-			byte state2 = curBoard[p2];
-			byte state3 = curBoard[p3];
-
-			// if they have the same state (marked by same player) and they are not all marked.
-			if ( state0 == player && state0 == state1 && state1 == state2 && state2 == state3) {
-				return Integer.MAX_VALUE;
-			}
-			if ( state0 == opponent && state0 == state1 && state1 == state2 && state2 == state3) {
-				return Integer.MIN_VALUE;
-			}
-			
-		}
-		return 0;
-	}
-	
+		
 	/**
 	 * Method: isDraw
 	 * @author Ziqi Tan

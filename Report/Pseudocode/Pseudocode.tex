@@ -59,15 +59,41 @@
 \caption{miniMax}
 \begin{algorithmic}[]
 
-\State \textbf{Input} List$<$positionTicTacToe$>$ $board$, int $player$
+\State \textbf{Input} \textbf{int} $depth$, \textbf{int} $player$, \textbf{boolean} $maximizingPlayer$, \textbf{int} $alpha$, \textbf{int} $beta$
 
-\State \textbf{Return} positionTicTacToe $myNextMove$
+\State \textbf{Return} \textbf{int} $value$
 
-\Procedure{myAIAlgorithm}{$board,player$}     
+\Procedure{miniMax}{}
+\If {$depth == 0 $} \Comment{search finish}
+	\State \textbf{return} $evaluation(player)$  \Comment{evaluate the board configutaion}
+\EndIf
+\If {$maximizingPlayer$}  \Comment{Maximizer}
+    	\State  $maxValue = newValue$
+	\State $myNextMove =curMove$
+\Else  \Comment{Minimizer}
+\State aaa
+\EndIf
 
 
 \EndProcedure
 \end{algorithmic}
 \end{algorithm}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \end{document}

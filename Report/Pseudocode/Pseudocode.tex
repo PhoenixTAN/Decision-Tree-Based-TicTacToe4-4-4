@@ -68,8 +68,16 @@
 	\State \textbf{return} $evaluation(player)$  \Comment{evaluate the board configutaion}
 \EndIf
 \If {$maximizingPlayer$}  \Comment{Maximizer}
-    	\State  $maxValue = newValue$
-	\State $myNextMove =curMove$
+    	\For{\texttt{<each available move $curMove$>}}
+        \State \texttt{<make current move>}
+	  \State $newVale = miniMax(depth, player, false, -\infty, +\infty)$
+	  \If {$newValue > maxValue$}
+    	           \State  $maxValue = newValue$
+		     \State $myNextMove =curMove$
+         \EndIf
+	   \State \texttt{<cancel current move>}  \Comment{Backtracking}
+      \EndFor  
+
 \Else  \Comment{Minimizer}
 \State aaa
 \EndIf

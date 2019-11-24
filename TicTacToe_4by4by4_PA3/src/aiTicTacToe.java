@@ -213,8 +213,7 @@ public class aiTicTacToe {
 			/* Maximizer player */
 			int value = Integer.MIN_VALUE;
 			// for each child do a miniMax recursion
-			for( int j = 0; j < traverseOrder.length; j++ ) {
-				int i = j;
+			for( int i = 0; i < traverseOrder.length; i++ ) {
 				if( curBoard[i] == 0 ) {					
 					// winMove pruning
 					byte winMove = getWinMove(player);
@@ -261,8 +260,7 @@ public class aiTicTacToe {
 			int opponent = (player == 1 ? 2 : 1);
 			
 			// for each child do a miniMax recursion
-			for( int j = 0; j < traverseOrder.length; j++ ) {
-				int i = j;
+			for( int i = 0; i < traverseOrder.length; i++ ) {
 				if( curBoard[i] == 0 ) {
 
 					// winMove pruning

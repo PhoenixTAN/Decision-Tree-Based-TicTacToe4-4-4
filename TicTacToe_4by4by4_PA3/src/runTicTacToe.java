@@ -20,13 +20,14 @@ public class runTicTacToe {
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
 	// private aiTicTacToe ai2;
-	private aiTicTacToeZhu ai2;
+	private aiTicTacToeEric ai2;
 	
 	public int result;
 	
 	private static int player1wins = 0;  // Ziqi Tan
 	private static int player2wins = 0; // Ziqi Tan
 	private static int firstPlayer = 0;  // Ziqi Tan
+	private static int overtime = 0;     // Ziqi Tan
 	
 	/**
 	 * Constructor
@@ -44,8 +45,8 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		ai2 = new aiTicTacToeZhu(2);
-		// ai2 = new aiTicTacToeEric(2, 4, 5000, false, 2,13,50);
+		// ai2 = new aiTicTacToe(2);
+		ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
 	}
 	
 	/**
@@ -342,7 +343,7 @@ public class runTicTacToe {
 
 		Random rand = new Random();
 		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
-		int turn = 2;
+		int turn = 1;
 		firstPlayer = turn;
 		// game loop
 		while( ( result = isEnded() ) == 0 ) {
@@ -353,6 +354,7 @@ public class runTicTacToe {
 				System.out.println("Player 1 run time: " + (time2 - time1) + " ms");
 				if( time2 - time1 - 10000 > 0 ) {
 					System.out.println("Overtime: " + (time2 - time1 - 10000) + " ms");
+					overtime++;
 				}
 				
 				if(makeMove(player1NextMove,1,board))
@@ -363,7 +365,8 @@ public class runTicTacToe {
 			else if( turn == 2 ) {
 				long time1 = System.currentTimeMillis();
 				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  // 2 stands for player 2
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithmZhu(board,2);
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
+				// positionTicTacToe player2NextMove = ai2.myAIAlgorithmZhu(board,2);
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))
@@ -423,6 +426,7 @@ public class runTicTacToe {
 			rounds--;
 			System.out.println("Player " + firstPlayer + " is the first player.");
 			System.out.println("player1: " + player1wins + " player2: " + player2wins);
+			System.out.println("Player 1 Overtime: " + overtime);
 		}
 	}
 }

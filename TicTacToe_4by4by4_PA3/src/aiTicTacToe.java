@@ -22,31 +22,35 @@ public class aiTicTacToe {
 	/**
 	 * Private variables
 	 * @author Ziqi Tan
-	 * */
-	private static byte[][] winningLine = new byte[76][4];	
+	 * */	
 	private positionTicTacToe myNextMove = new positionTicTacToe(0, 0, 0);
 	private int[] playerSequenceNum = new int[4];
 	private int[] opponentSequenceNum = new int[4];	
 	private byte[] curBoard = new byte[64];
+	private long time1 = 0;
+	private boolean searchFinished = true;
 				
 	/**
-	 * Private static final variables
+	 * Private static/final variables
 	 * @author Ziqi Tan
 	 * */
+	private static byte[][] winningLine = new byte[76][4];
 	private static final int[] playerSequenceValue = new int[] {1, 15, 130, 100000};
 	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
-	private static final int timeOutAlert = 9000;   // ms return next move in 9 second
-	private static final int timeEnough = 5500;     // ms
+	private static final int timeOutAlert = 9700;   // ms return next move in 9 second
+	private static final int timeEnough = 8000;     // ms
 	private static final int miniMaxDepth = 4;
 	
 	private static final int[] corePoints = {
 		21, 22, 25, 26, 37, 38, 41, 42
 	};
 	
+	@SuppressWarnings("unused")
 	private static final int[] cornerPoints = {
 		0, 3, 12, 16, 48, 51, 60, 63
 	};
 	
+	@SuppressWarnings("unused")
 	private static final int[] otherPoints = {
 		1, 2, 4, 5, 6, 7, 8, 9, 
 		10, 11, 13, 14, 15, 17, 18, 19, 
@@ -96,11 +100,9 @@ public class aiTicTacToe {
 	 * 		An instance of class positionTicTacToe(x, y, z).
 	 * */
 	public positionTicTacToe myAIAlgorithm(List<positionTicTacToe> board, int player) {
-		
-		// TODO: this is where you are going to implement your AI algorithm to win the game. 
-							
+									
 		try {
-			long time1 = System.currentTimeMillis();
+			time1 = System.currentTimeMillis();
 			System.out.println("Player" + player + "' turn:");
 			
 			// transform the List<> into byte[].
@@ -142,9 +144,10 @@ public class aiTicTacToe {
 					int i = j;
 					if( curBoard[i] == 0 ) {					
 						// make move					
-						curBoard[i] = (byte)player;					
+						curBoard[i] = (byte)player;		
+						this.searchFinished = true;
 						int newValue = miniMax(depth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);										
-						if( newValue > maxValue ) {
+						if( newValue > maxValue && this.searchFinished ) {
 							// update max value
 							maxValue = newValue;						
 							// update my next best move
@@ -167,6 +170,7 @@ public class aiTicTacToe {
 					System.out.println("Depth overflow. MyNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
 					return myNextMove;
 				}
+				
 			} while( System.currentTimeMillis() - time1 < timeEnough );   // if you have enough time
 			
 			System.out.println("myNextMove: " + myNextMove.x + " " + myNextMove.y + " " + myNextMove.z + " Value: " + maxValue);
@@ -184,10 +188,28 @@ public class aiTicTacToe {
 	 * @author Ziqi Tan
 	 * */
 	private int miniMax(int depth, int player, boolean maximizingPlayer, int alpha, int beta) {
-
-		if( depth == 0 || isWin() ) {
+		
+		// time control
+		long time2 = System.currentTimeMillis();
+		if( time2 - time1 > timeOutAlert ) {
+			if( depth > 0 ) {
+				this.searchFinished = false;
+			}
 			return evaluation(player);
 		}
+		
+		// game end
+		int gameEnd = isEnd(player);
+		if( gameEnd != 0 ) {
+			return evaluation(player);
+		}
+		
+		// search finish
+		if( depth == 0 ) {
+			return evaluation(player);
+		}
+				
+		// draw 
 		if( isDraw() == 64 ) {
 			return 0;
 		}
@@ -382,8 +404,8 @@ public class aiTicTacToe {
 	 * @author Ziqi Tan
 	 * Function: check whether the game is end.
 	 * */	
-	private boolean isWin() {
-
+	private int isEnd(int player) {
+		int opponent = (player == 1 ? 2 : 1);
 		for(int i = 0; i < winningLine.length; i++) {
 			byte p0 = winningLine[i][0];
 			byte p1 = winningLine[i][1];
@@ -396,11 +418,15 @@ public class aiTicTacToe {
 			byte state3 = curBoard[p3];
 
 			// if they have the same state (marked by same player) and they are not all marked.
-			if ( state0 != 0 && state0 == state1 && state1 == state2 && state2 == state3) {
-				return true;
+			if ( state0 == player && state0 == state1 && state1 == state2 && state2 == state3) {
+				return Integer.MAX_VALUE;
 			}
+			if ( state0 == opponent && state0 == state1 && state1 == state2 && state2 == state3) {
+				return Integer.MIN_VALUE;
+			}
+			
 		}
-		return false;
+		return 0;
 	}
 	
 	/**
@@ -642,37 +668,39 @@ public class aiTicTacToe {
 			byte p2 = winningLine[i][2];
 			byte p3 = winningLine[i][3];
 			
+			byte state0 = curBoard[p0];
+			byte state1 = curBoard[p1];
+			byte state2 = curBoard[p2];
+			byte state3 = curBoard[p3];
+			
 			int playerCounter = 0;
-			if(p0 == player) {
+			if(state0 == player) {
 				playerCounter++;
 			}
-			if(p1 == player) {
+			if(state1 == player) {
 				playerCounter++;
 			}
-			if(p2 == player) {
+			if(state2 == player) {
 				playerCounter++;
 			}
-			if(p3 == player) {
+			if(state3 == player) {
 				playerCounter++;
 			}
 			
 			if(playerCounter == 3) {
-				if( p3 == 0 ) {
+				if( state3 == 0 ) {
 					winMove = p3;				
 					return winMove;
 				}
-				//return blockMove = p3;
-				else if (p2 == 0) {
+				else if (state2 == 0) {
 					winMove = p2;				
 					return winMove;
 				}
-				//return blockMove = p2;
-				else if (p1 == 0) {
+				else if (state1 == 0) {
 					winMove = p1;				
 					return winMove;
 				}
-				//return blockMove = p1;
-				else if (p0 == 0) {
+				else if (state0 == 0) {
 					winMove = p0;				
 					return winMove;
 				}

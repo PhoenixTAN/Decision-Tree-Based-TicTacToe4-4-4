@@ -146,13 +146,13 @@ public class aiTicTacToe {
 						// make move					
 						curBoard[i] = (byte)player;		
 						this.searchFinished = true;
-						int newValue = miniMax(depth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);										
+						int newValue = miniMax(depth, player, false, Integer.MIN_VALUE, Integer.MAX_VALUE);	
 						if( newValue > maxValue && this.searchFinished ) {
 							// update max value
 							maxValue = newValue;						
 							// update my next best move
 							int[] xyz = oneDToxyz((byte) i);
-							myNextMove = new positionTicTacToe(xyz[0], xyz[1], xyz[2]);
+							myNextMove = new positionTicTacToe(xyz[0], xyz[1], xyz[2]);							
 						}
 						// cancel move
 						curBoard[i] = 0;  // backtracking
@@ -224,8 +224,13 @@ public class aiTicTacToe {
 					// winMove pruning
 					byte winMove = getWinMove(player);
 					if( winMove != -1 ) {
-						value = Integer.MAX_VALUE;
-						alpha = Integer.MAX_VALUE;
+						
+						// value = Integer.MAX_VALUE;
+						// alpha = Integer.MAX_VALUE;
+						curBoard[winMove] = (byte) player;
+						value = evaluation(player);
+						alpha = value;
+						curBoard[winMove] = 0;
 						break;
 					}					
 					// force move pruning
@@ -271,8 +276,12 @@ public class aiTicTacToe {
 					// winMove pruning
 					byte winMove = getWinMove(opponent);
 					if( winMove != -1 ) {
-						value = Integer.MIN_VALUE;
-						beta = Integer.MIN_VALUE;
+						// value = Integer.MIN_VALUE;
+						// beta = Integer.MIN_VALUE;
+						curBoard[winMove] = (byte) opponent;
+						value = evaluation(opponent);
+						beta = value;
+						curBoard[winMove] = 0;
 						break;
 					}
 					

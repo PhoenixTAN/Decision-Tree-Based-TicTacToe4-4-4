@@ -19,8 +19,8 @@ public class runTicTacToe {
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
-	// private aiTicTacToeEric ai2;
-	private aiTicTacToe ai2;
+	// private aiTicTacToeZhu ai2;
+	private aiTicTacToeEric ai2;
 	
 	public int result;
 	
@@ -45,8 +45,8 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		ai2 = new aiTicTacToe(2);
-		// ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
+		// ai2 = new aiTicTacToeZhu(2);
+		ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
 	}
 	
 	/**
@@ -379,40 +379,39 @@ public class runTicTacToe {
 			}
 		}
 		
-			//game is ended
+		// game is ended
 		if( result == 1 ) {
 			player1wins++;
-			//game ends, player 1 wins 
+			// game ends, player 1 wins 
 			System.out.println("Player1 Wins");
 			printBoardTicTacToe(board);
 		}
 		else if( result == 2 ) {
 			player2wins++;
-			//game ends, player 1 wins 
+			// game ends, player 1 wins
 			System.out.println("Player2 Wins");
 			printBoardTicTacToe(board);
 		}
 		else if( result == -1 ) {
-			//game ends, it's a draw 
+			// game ends, it's a draw 
 			System.out.println("This is a draw.");
 			printBoardTicTacToe(board);
 		}
 		else {
-			//exception occurs, stop
+			// exception occurs, stop
 			System.out.println("Error!");
 		}
-		
 	}
 		
 	//run the game once
 	public static void main(String[] args) {		
 
-		//run game loop
-		/*runTicTacToe rttt = new runTicTacToe();
+		// run game loop
+		/* runTicTacToe rttt = new runTicTacToe();
 		long time1 = System.currentTimeMillis();
 		rttt.run();
 		long time2 = System.currentTimeMillis();
-		System.out.println("Program run time: " + (time2 - time1) + " ms");*/
+		System.out.println("Program run time: " + (time2 - time1) + " ms"); */
 		
 		int rounds = 10;
 		

@@ -366,9 +366,9 @@ public class aiTicTacToe {
 				opponentCounter++;
 			}
 			
-			/*if( playerCounter > 0 && opponentCounter > 0 ) {
+			if( playerCounter > 0 && opponentCounter > 0 ) {
 				continue;
-			}*/
+			}
 			
 			if( playerCounter > 0 ) {
 				playerSequenceNum[playerCounter-1]++;

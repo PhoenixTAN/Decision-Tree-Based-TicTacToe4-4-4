@@ -19,7 +19,6 @@ public class runTicTacToe {
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
-	// private aiTicTacToeZhu ai2;
 	private aiTicTacToeEric ai2;
 	
 	public int result;
@@ -45,8 +44,8 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		// ai2 = new aiTicTacToeZhu(2);
 		ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
+
 	}
 	
 	/**
@@ -413,7 +412,7 @@ public class runTicTacToe {
 		long time2 = System.currentTimeMillis();
 		System.out.println("Program run time: " + (time2 - time1) + " ms"); */
 		
-		int rounds = 10;
+		int rounds = 100;
 		
 		while( rounds > 0 ) {
 			runTicTacToe rttt = new runTicTacToe();

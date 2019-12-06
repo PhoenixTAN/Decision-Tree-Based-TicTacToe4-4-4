@@ -1,4 +1,5 @@
-import java.util.*;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Class: aiTicTacToe
@@ -15,7 +16,7 @@ import java.util.*;
  * 
  * */
 
-public class aiTicTacToe {
+public class aiTicTacToeSelf {
 	
 	public int player;  // 1 for player 1 and 2 for player 2
 	
@@ -35,8 +36,8 @@ public class aiTicTacToe {
 	 * @author Ziqi Tan
 	 * */
 	private static byte[][] winningLine = new byte[76][4];
-	private static final int[] playerSequenceValue = new int[] {1, 15, 130, 100000};
-	private static final int[] opponentSequenceValue = new int[] {-1, -10, -100, -100000};
+	private static final int[] playerSequenceValue = new int[] {1, 15, 70, 100000};
+	private static final int[] opponentSequenceValue = new int[] {-1, -10, -50, -100000};
 
 	private static final int timeOutAlert = 9800;   // ms return next move in 9 second
 	private static final int timeEnough = 8000;     // ms
@@ -80,7 +81,7 @@ public class aiTicTacToe {
 	 * Modified by Ziqi Tan:
 	 * 		Initialize winningLines.
 	 * */
-	public aiTicTacToe( int setPlayer ) {		
+	public aiTicTacToeSelf( int setPlayer ) {		
 		player = setPlayer;
 		this.getWinningLines();
 	}
@@ -230,9 +231,9 @@ public class aiTicTacToe {
 					byte forceMove = getForceMove(player);
 					if( forceMove != -1 ) {
 						curBoard[forceMove] = (byte)player;
-						// DFS and deepening
+						// DFS and deepening 
 						value = Math.max(value, miniMax(depth, player, false, alpha, beta));
-						curBoard[forceMove] = 0;   // backtracking						
+						curBoard[forceMove] = 0;  // backtracking						
 						break;
 					}
 					else {

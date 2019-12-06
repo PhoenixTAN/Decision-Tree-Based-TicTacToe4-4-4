@@ -19,7 +19,9 @@ public class runTicTacToe {
 	private List<List<positionTicTacToe>>  winningLines = new ArrayList<>(); 
 	private List<positionTicTacToe> board = new ArrayList<>();
 	private aiTicTacToe ai1;
-	private aiTicTacToeEric ai2;
+	// private aiTicTacToeSelf ai2;
+	// private aiTicTacToe ai2;
+	private aiTicTacToeV1 ai2;
 	
 	public int result;
 	
@@ -27,6 +29,12 @@ public class runTicTacToe {
 	private static int player2wins = 0; // Ziqi Tan
 	private static int firstPlayer = 0;  // Ziqi Tan
 	private static int overtime = 0;     // Ziqi Tan
+	private static int player1firstPlayerWin = 0;  // Ziqi Tan
+	private static int player2firstPlayerWin = 0;  // Ziqi Tan
+	private static int player1SecondPlayerWin = 0;  // Ziqi Tan
+	private static int player2SecondPlayerWin = 0;  // Ziqi Tan
+	private static int winner = 0;  // Ziqi Tan
+
 	
 	/**
 	 * Constructor
@@ -44,7 +52,9 @@ public class runTicTacToe {
 		
 		// initialize AI players
 		ai1 = new aiTicTacToe(1);
-		ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
+		// ai2 = new aiTicTacToeSelf(2);
+		ai2 = new aiTicTacToeV1(2);
+		// ai2 = new aiTicTacToeEric(2, 4, 5000, false, 1, 30, 100);
 
 	}
 	
@@ -341,8 +351,8 @@ public class runTicTacToe {
 	public void run() {
 
 		Random rand = new Random();
-		// int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
-		int turn = 1;
+		int turn = rand.nextInt(2)+1; //1 = player1's turn, 2 = player2's turn, who go first is randomized 
+		// int turn = 1;
 		firstPlayer = turn;
 		// game loop
 		while( ( result = isEnded() ) == 0 ) {
@@ -364,7 +374,7 @@ public class runTicTacToe {
 			else if( turn == 2 ) {
 				long time1 = System.currentTimeMillis();
 				// positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);  // 2 stands for player 2
-				positionTicTacToe player2NextMove = ai2.myAIAlgorithm(board,2);
+				positionTicTacToe player2NextMove = ai2.myAIAlgorithm2(board,2);
 				long time2 = System.currentTimeMillis();
 				System.out.println("Player 2 run time: " + (time2 - time1) + " ms");
 				if(makeMove(player2NextMove,2,board))
@@ -381,6 +391,7 @@ public class runTicTacToe {
 		// game is ended
 		if( result == 1 ) {
 			player1wins++;
+			winner = 1;
 			// game ends, player 1 wins 
 			System.out.println("Player1 Wins");
 			printBoardTicTacToe(board);
@@ -388,11 +399,13 @@ public class runTicTacToe {
 		else if( result == 2 ) {
 			player2wins++;
 			// game ends, player 1 wins
+			winner = 2;
 			System.out.println("Player2 Wins");
 			printBoardTicTacToe(board);
 		}
 		else if( result == -1 ) {
 			// game ends, it's a draw 
+			winner = 0;
 			System.out.println("This is a draw.");
 			printBoardTicTacToe(board);
 		}
@@ -412,10 +425,11 @@ public class runTicTacToe {
 		long time2 = System.currentTimeMillis();
 		System.out.println("Program run time: " + (time2 - time1) + " ms"); */
 		
-		int rounds = 100;
+		int rounds = 1;
 		
 		while( rounds > 0 ) {
 			runTicTacToe rttt = new runTicTacToe();
+			winner = 0;
 			long time1 = System.currentTimeMillis();
 			rttt.run();
 			long time2 = System.currentTimeMillis();
@@ -424,6 +438,25 @@ public class runTicTacToe {
 			System.out.println("Player " + firstPlayer + " is the first player.");
 			System.out.println("player1: " + player1wins + " player2: " + player2wins);
 			System.out.println("Player 1 Overtime: " + overtime);
+			
+			if( firstPlayer == 1 && winner == 1 ) {
+				player1firstPlayerWin++;
+			}
+			else if( firstPlayer == 2 && winner == 2 ) {
+				player2firstPlayerWin++;
+			}
+			else if( firstPlayer == 2 && winner == 1 ) {
+				player1SecondPlayerWin++;
+			}
+			else if( firstPlayer == 1 && winner == 2 ) {
+				player2SecondPlayerWin++;
+			}
+			
+			System.out.println("Player 1 as first player: " + player1firstPlayerWin);
+			System.out.println("Player 2 as first player: " + player2firstPlayerWin);
+			System.out.println("Player 1 as second player: " + player1SecondPlayerWin);
+			System.out.println("Player 2 as second player: " + player2SecondPlayerWin);
+			
 		}
 	}
 }
